@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import can
 import cardata
+import threading
 from datetime import datetime
 
 from PyQt5.QtGui import QGuiApplication
@@ -13,6 +14,8 @@ from PySide2.QtCore import QObject, Signal, Slot
 
 
 class MainWindow(QObject):
+    isThreadRunning = False
+
     def __init__(self):
         QObject.__init__(self)
 
@@ -29,9 +32,15 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     triggeredControl = Signal(dict)
 
+    @Slot()
+    def killThread(self):
+        self.isThreadRunning=False
+
+
     def emitDefaults(self):
         self.isEngineRunning.emit(False)
         self.isCanOnline.emit(False)
+
     bus = None
 
     # define can information for MCP2515 and GMLAN Single Wire Can (LSCAN)
@@ -47,7 +56,18 @@ class MainWindow(QObject):
             for msg in self.bus:
                 self.checkCanMessage(msg.arbitration_id,  msg.data)
         else:
+            self.isThreadRunning = True
+            while True:
+                print("test")
+                if(self.isThreadRunning == False):
+                    break
             self.isCanOnline.emit(False)
+
+    thread = None
+
+    def startCanLoop(self):
+        self.thread = threading.Thread(target=self.canLoop)
+        self.thread.start()
 
     def checkCanMessage(self, id, data):
         if(cardata.canMessages[id] == 'MOTION'):
@@ -95,10 +115,9 @@ if __name__ == "__main__":
     main = MainWindow()
     engine.rootContext().setContextProperty("backend", main)
     engine.load(os.fspath(Path(__file__).resolve().parent / "main.qml"))
+    engine.quit.connect(main.killThread)
     main.emitDefaults()
-    timer = QtCore.QTimer()
-    timer.timeout.connect(main.canLoop)
-    timer.start(40)
+    main.startCanLoop()
     if not engine.rootObjects():
         sys.exit(-1)
     sys.exit(app.exec())

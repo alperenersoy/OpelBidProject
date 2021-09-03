@@ -1,5 +1,5 @@
 import QtQuick 2
-import QtQuick.Window 2
+import QtQuick.Window 2.3
 import QtQuick.Controls 2
 import 'qml/pages' as Pages
 
@@ -11,6 +11,10 @@ Window {
     color: "#000000"
     property alias dtc_button: dtc_button
     title: qsTr("Opel BID")
+
+    onClosing:{
+        backend.killThread()
+    }
 
     property double airTemp: 0
     property bool isCanOnline: false
@@ -498,7 +502,7 @@ Window {
 
         function onIsEngineRunning(isEngineRunning)
         {
-            if(isEngineRunning)
+            /*if(isEngineRunning)
             {
                 isCanOnline = true;
                 swipeView.interactive = true;
@@ -514,12 +518,12 @@ Window {
                 stackViewDtc.currentItem.isCanOnline=false;
                 swipeView.setCurrentIndex(0);
                 swipeView.interactive = false;
-            }
+            }*/
         }
 
         function onIsCanOnline(isCanOnline)
         {
-            if(isCanOnline)
+            /*if(isCanOnline)
             {
                 isCanOnline = true;
                 swipeView.interactive = true;
@@ -536,7 +540,7 @@ Window {
                 stackViewDtc.currentItem.isCanOnline=false;
                 swipeView.setCurrentIndex(0);
                 swipeView.interactive = false;
-            }
+            }*/
         }
 
     }

@@ -4,7 +4,7 @@ import QtQuick.Controls 2.0
 Item {
     id: item1
 
-    property bool isOBDOnline: false
+    property bool isCanOnline: false
     property var fcDelay
 
     Rectangle {

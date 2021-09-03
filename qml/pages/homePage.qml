@@ -9,7 +9,7 @@ Item {
     property string date: Qt.formatDateTime(new Date(), "dd.MM.yyyy")
     property string clock: Qt.formatTime(new Date(),"hh:mm")
     property double temp: 0
-    property bool isOBDOnline: false
+    property bool isCanOnline: false
 
     FontLoader{
         id: fontLoader
@@ -80,7 +80,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 anchors.bottomMargin: -100
                 anchors.horizontalCenter: parent.horizontalCenter
-                visible:isOBDOnline
+                visible:isCanOnline
             }
         }
 

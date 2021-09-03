@@ -10,7 +10,7 @@ Item {
     property double speed: 150
     property double rpm: 0
     property double engineTemp: 0
-    property bool isOBDOnline: false
+    property bool isCanOnline: false
 
     FontLoader{
         id: fontLoader
@@ -39,7 +39,7 @@ Item {
                 y: 39
                 width: 200
                 height: 200
-                visible: isOBDOnline
+                visible: isCanOnline
                 color: "#00000000"
                 radius: 49
                 border.color: "#7f353637"
@@ -150,7 +150,7 @@ Item {
                 y: 39
                 width: 200
                 height: 200
-                visible: isOBDOnline
+                visible: isCanOnline
                 color: "#00000000"
                 radius: 100
                 border.color: "#7f353637"

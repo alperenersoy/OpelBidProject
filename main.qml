@@ -13,7 +13,7 @@ Window {
     title: qsTr("Opel BID")
 
     property double airTemp: 0
-    property bool isOBDOnline: false
+    property bool isCanOnline: false
     property bool isCarStarted: false
 
     Rectangle {
@@ -253,7 +253,7 @@ Window {
                         anchors.right: parent.right
                         font.pixelSize: 24
                         anchors.rightMargin: 45
-                        visible:isOBDOnline
+                        visible:isCanOnline
 
                         Text {
                             id: degree
@@ -290,7 +290,7 @@ Window {
                     Text {
                         id: temp1
                         y: 13
-                        visible: isOBDOnline
+                        visible: isCanOnline
                         color: "#ffffff"
                         text: airTemp
                         anchors.verticalCenter: parent.verticalCenter
@@ -442,25 +442,6 @@ Window {
             clock.text = Qt.formatTime(new Date(),"hh:mm");
             stackViewHome.currentItem.date = Qt.formatDateTime(new Date(), "dd.MM.yyyy")
             stackViewHome.currentItem.clock = Qt.formatTime(new Date(),"hh:mm");
-
-            /*if(backend.checkOBDConnection()){
-                if(isOBDOnline==false)
-                {
-                    isOBDOnline = true;
-                    swipeView.interactive = true;
-                    stackViewHome.currentItem.isOBDOnline = true;
-                    stackViewGauges.currentItem.isOBDOnline = true;
-                    stackViewDtc.currentItem.isOBDOnline=true;
-                }
-            }
-            else{
-                    isOBDOnline = false;
-                    stackViewHome.currentItem.isOBDOnline = false;
-                    stackViewGauges.currentItem.isOBDOnline = false;
-                    stackViewDtc.currentItem.isOBDOnline=false;
-                    swipeView.setCurrentIndex(0);
-                    swipeView.interactive = false;
-            }*/
         }
     }
 
@@ -505,6 +486,57 @@ Window {
         function onEstRange(estRange)
         {
             stackViewFuel.currentItem.estRange = estRange
+        }
+
+        function onTriggeredControl(triggeredControl)
+        {
+            if(triggeredControl.control == 'LEFT_KNOB_UP')
+                swipeView.setCurrentIndex = swipeView.currentIndex+1
+            else if(triggeredControl.control == 'LEFT_KNOB_DOWN')
+                swipeView.setCurrentIndex = swipeView.currentIndex-1
+        }
+
+        function onIsEngineRunning(isEngineRunning)
+        {
+            if(isEngineRunning)
+            {
+                isCanOnline = true;
+                swipeView.interactive = true;
+                stackViewHome.currentItem.isCanOnline = true;
+                stackViewGauges.currentItem.isCanOnline = true;
+                stackViewDtc.currentItem.isCanOnline=true;
+            }
+            else
+            {
+                isCanOnline = false;
+                stackViewHome.currentItem.isCanOnline = false;
+                stackViewGauges.currentItem.isCanOnline = false;
+                stackViewDtc.currentItem.isCanOnline=false;
+                swipeView.setCurrentIndex(0);
+                swipeView.interactive = false;
+            }
+        }
+
+        function onIsCanOnline(isCanOnline)
+        {
+            if(isCanOnline)
+            {
+                isCanOnline = true;
+                swipeView.interactive = true;
+                stackViewHome.currentItem.isCanOnline = true;
+                stackViewGauges.currentItem.isCanOnline = true;
+                stackViewDtc.currentItem.isCanOnline=true;
+            }
+
+            else
+            {
+                isCanOnline = false;
+                stackViewHome.currentItem.isCanOnline = false;
+                stackViewGauges.currentItem.isCanOnline = false;
+                stackViewDtc.currentItem.isCanOnline=false;
+                swipeView.setCurrentIndex(0);
+                swipeView.interactive = false;
+            }
         }
 
     }

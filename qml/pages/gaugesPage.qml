@@ -6,7 +6,7 @@ Item {
     property double speed: 0
     property double rpm: 0
     property double engineTemp: 0
-    property bool isOBDOnline: false
+    property bool isCanOnline: false
 
     SwipeView {
         id: swipeView
@@ -54,10 +54,10 @@ Item {
             stackViewGauge2.currentItem.engineTemp = engineTemp
             stackViewGauge3.currentItem.engineTemp = engineTemp
         }
-        function onIsOBDOnlineChanged() {
-            stackViewGauge1.currentItem.isOBDOnline = isOBDOnline
-            stackViewGauge2.currentItem.isOBDOnline = isOBDOnline
-            stackViewGauge3.currentItem.isOBDOnline = isOBDOnline
+        function onisCanOnlineChanged() {
+            stackViewGauge1.currentItem.isCanOnline = isCanOnline
+            stackViewGauge2.currentItem.isCanOnline = isCanOnline
+            stackViewGauge3.currentItem.isCanOnline = isCanOnline
         }
     }
 

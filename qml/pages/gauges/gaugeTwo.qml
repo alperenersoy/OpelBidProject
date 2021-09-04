@@ -2,14 +2,14 @@ import QtQuick 2
 import QtQuick.Controls 2
 
 Item {
-    id:gaugeOne
+    id:gaugeTwo
     width:800
     height: 430
 
 
-    property double speed: 150
-    property double rpm: 0
-    property double engineTemp: 0
+    property double speed: 110
+    property double rpm: 60
+    property double engineTemp: 130
     property bool isCanOnline: false
 
 
@@ -52,7 +52,7 @@ Item {
                 color: "#ffffff"
                 text: qsTr("km/s")
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -75
+                anchors.bottomMargin: -100
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: 20
             }
@@ -417,10 +417,22 @@ Item {
         anchors.leftMargin: 0
         onDoubleClicked: {
             if(rpm_outer.visible == true)
+            {
                 rpm_outer.visible = false
+                backend.setSetting('gaugeTwoRpmHidden', "true")
+            }
             else
+            {
                 rpm_outer.visible = true
+                backend.setSetting('gaugeTwoRpmHidden', "false")
+            }
         }
+        Component.onCompleted: {
+             var gaugeTwoRpmHiddenSetting = backend.getSetting("gaugeTwoRpmHidden")
+             if(gaugeTwoRpmHiddenSetting !== null)
+                rpm_outer.visible = !(gaugeTwoRpmHiddenSetting === 'true')
+        }
+        
     }
 
     MouseArea {
@@ -433,10 +445,19 @@ Item {
         anchors.topMargin: 0
         anchors.bottomMargin: 0
         onDoubleClicked: {
-            if(engine_temp_outer.visible == true)
+            if(engine_temp_outer.visible == true){
                 engine_temp_outer.visible = false
-            else
+                backend.setSetting('gaugeTwoEngineTempHidden', "true")
+            }
+            else{
                 engine_temp_outer.visible = true
+                backend.setSetting('gaugeTwoEngineTempHidden', "false")
+            }
+        }
+        Component.onCompleted: {
+             var gaugeTwoEngineTempHiddenSetting = backend.getSetting("gaugeTwoEngineTempHidden")
+             if(gaugeTwoEngineTempHiddenSetting !== null)
+                engine_temp_outer.visible = !(gaugeTwoEngineTempHiddenSetting === 'true')
         }
     }
 

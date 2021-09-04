@@ -1,12 +1,12 @@
 fuelCapacity = 58  # For Opel Zafira B
 
 canMessages = {
-    108:   "MOTION",  # speed and rpm
-    145:   "ENGINE",  # coolant, running state and cruise control
-    445:   "AIR_TEMP",
-    375:   "FUEL_LEVEL",
-    175:   "SW_CONTROL", # any steering wheel control including turn signals and glass wash
-    500:   "VOLTAGE"
+    0x108:   "MOTION",  # speed and rpm
+    0x145:   "ENGINE",  # coolant, running state and cruise control
+    0x445:   "AIR_TEMP",
+    0x375:   "FUEL_LEVEL",
+    0x175:   "SW_CONTROL", # any steering wheel control including turn signals and glass wash
+    0x500:   "VOLTAGE"
 }
 
 

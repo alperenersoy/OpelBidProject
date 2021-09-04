@@ -5,6 +5,7 @@ import sys
 import can
 import cardata
 import threading
+from easysettings import EasySettings
 from datetime import datetime
 
 from PyQt5.QtGui import QGuiApplication
@@ -14,10 +15,10 @@ from PySide2.QtCore import QObject, Signal, Slot
 
 
 class MainWindow(QObject):
-    isThreadRunning = False
-
     def __init__(self):
         QObject.__init__(self)
+
+    settings = EasySettings("settings.conf")
 
     isCanOnline = Signal(bool)
     speed = Signal(float)
@@ -32,10 +33,17 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     triggeredControl = Signal(dict)
 
-    @Slot()
-    def killThread(self):
-        self.isThreadRunning=False
+    @Slot(str, str)
+    def setSetting(self, setting, value):
+        self.settings.set(setting, value)
+        self.settings.save()
 
+    @Slot(str, result=str)
+    def getSetting(self, setting):
+        if self.settings.has_option(setting):
+            return self.settings.get(setting)
+        else:
+            return None
 
     def emitDefaults(self):
         self.isEngineRunning.emit(False)
@@ -48,25 +56,31 @@ class MainWindow(QObject):
         bus = can.interface.Bus(bustype='socketcan',
                                 channel='can0', bitrate=33300)
     except:
-        print("Can bus tanımlanamadı.")
+        print("Can bus başlatılamıyor.")
 
     def canLoop(self):
         if self.bus is not None:
             self.isCanOnline.emit(True)
-            for msg in self.bus:
+            while True:
+                msg = self.bus.recv()
                 self.checkCanMessage(msg.arbitration_id,  msg.data)
         else:
-            self.isThreadRunning = True
             while True:
-                print("test")
-                if(self.isThreadRunning == False):
+                #print("Can bağlantısı sağlanamadı. Yeniden deneniyor...")
+                try:
+                    self.bus = can.interface.Bus(bustype='socketcan',
+                                                 channel='can0', bitrate=33300)
+                except:
+                    continue
+                if self.bus is not None:
+                    self.canLoop()
                     break
             self.isCanOnline.emit(False)
 
     thread = None
 
     def startCanLoop(self):
-        self.thread = threading.Thread(target=self.canLoop)
+        self.thread = threading.Thread(target=self.canLoop, daemon=True)
         self.thread.start()
 
     def checkCanMessage(self, id, data):
@@ -115,7 +129,6 @@ if __name__ == "__main__":
     main = MainWindow()
     engine.rootContext().setContextProperty("backend", main)
     engine.load(os.fspath(Path(__file__).resolve().parent / "main.qml"))
-    engine.quit.connect(main.killThread)
     main.emitDefaults()
     main.startCanLoop()
     if not engine.rootObjects():

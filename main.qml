@@ -11,11 +11,8 @@ Window {
     color: "#000000"
     property alias dtc_button: dtc_button
     title: qsTr("Opel BID")
-
-    onClosing:{
-        backend.killThread()
-    }
-
+    //visibility: 'FullScreen'
+    
     property double airTemp: 0
     property bool isCanOnline: false
     property bool isCarStarted: false
@@ -36,6 +33,16 @@ Window {
             id: toolbar_swipe
             anchors.fill: parent
             orientation: Qt.Horizontal
+
+            Component.onCompleted: {
+            var currentTopBarSetting = backend.getSetting("currentTopBar")
+            if(currentTopBarSetting)
+                toolbar_swipe.setCurrentIndex(parseInt(currentTopBarSetting))
+            }
+
+            onCurrentIndexChanged:{ 
+                backend.setSetting('currentTopBar', toolbar_swipe.currentIndex)
+            }
 
             Item {
                 Rectangle {
@@ -324,17 +331,25 @@ Window {
 
     SwipeView {
         id: swipeView
-        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         orientation: Qt.Horizontal
         z: 5
         currentIndex: 0
-        anchors.topMargin: 0
         /* interactive: false*/
         Item {
+            id: item1
             z: 0
             StackView {
                 id: stackViewHome
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 480
                 z: 0
                 initialItem: "qml/pages/homePage.qml"
             }
@@ -437,7 +452,7 @@ Window {
 
     Timer {
         id: timer
-        interval: 1
+        interval: 175
         repeat: true
         running: true
 
@@ -446,6 +461,9 @@ Window {
             clock.text = Qt.formatTime(new Date(),"hh:mm");
             stackViewHome.currentItem.date = Qt.formatDateTime(new Date(), "dd.MM.yyyy")
             stackViewHome.currentItem.clock = Qt.formatTime(new Date(),"hh:mm");
+            stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;
+            stackViewGauges.currentItem.speed = Math.floor(Math.random() * 150) + 1;
+            stackViewGauges.currentItem.engineTemp = Math.floor(Math.random() * 130) + 1;
         }
     }
 

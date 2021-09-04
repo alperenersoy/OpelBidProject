@@ -7,9 +7,9 @@ Item {
     height: 430
 
 
-    property double speed: 150
-    property double rpm: 0
-    property double engineTemp: 0
+    property double speed: 104
+    property double rpm: 60
+    property double engineTemp: 130
     property bool isCanOnline: false
 
     FontLoader{
@@ -41,11 +41,11 @@ Item {
                 height: 200
                 visible: isCanOnline
                 color: "#00000000"
-                radius: 49
+                radius: 100
                 border.color: "#7f353637"
                 border.width: 0
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenterOffset: -100
+                anchors.horizontalCenterOffset: -175
                 anchors.horizontalCenter: parent.horizontalCenter
                 transformOrigin: Item.Center
                 rotation: 270
@@ -92,7 +92,7 @@ Item {
                     id: rpm_gradient
                     width: 200
                     height: 200
-                    radius: 150
+                    radius: 96
                     border.color: "#00000000"
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
@@ -131,7 +131,7 @@ Item {
                     width: 200
                     height: 200
                     color: "#000000"
-                    radius: 100
+                    radius: 96
                     border.color: "#00000000"
                     border.width: 0
                     anchors.bottom: parent.bottom
@@ -156,7 +156,7 @@ Item {
                 border.color: "#7f353637"
                 border.width: 0
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenterOffset: 100
+                anchors.horizontalCenterOffset: 175
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenterOffset: 0
                 transformOrigin: Item.Center
@@ -203,7 +203,7 @@ Item {
                     width: 200
                     height: 200
                     color: "#59ccff"
-                    radius: 100
+                    radius: 96
                     border.color: "#00000000"
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
@@ -247,7 +247,7 @@ Item {
                     width: 200
                     height: 200
                     color: "#000000"
-                    radius: 100
+                    radius: 96
                     border.color: "#00000000"
                     border.width: 0
                     anchors.verticalCenter: parent.verticalCenter
@@ -291,7 +291,7 @@ Item {
                     color: "#ffffff"
                     text: qsTr("km/s")
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: -50
+                    anchors.bottomMargin: -60
                     anchors.horizontalCenter: parent.horizontalCenter
                     font.pointSize: 20
                 }
@@ -310,9 +310,20 @@ Item {
         anchors.leftMargin: 0
         onDoubleClicked: {
             if(rpm_outer.visible == true)
+            {
                 rpm_outer.visible = false
+                backend.setSetting('gaugeThreeRpmHidden', "true")
+            }
             else
+            {
                 rpm_outer.visible = true
+                backend.setSetting('gaugeThreeRpmHidden', "false")
+            }
+        }
+        Component.onCompleted: {
+             var gaugeThreeRpmHiddenSetting = backend.getSetting("gaugeThreeRpmHidden")
+             if(gaugeThreeRpmHiddenSetting !== null)
+                rpm_outer.visible = !(gaugeThreeRpmHiddenSetting === 'true')
         }
     }
 
@@ -326,10 +337,19 @@ Item {
         anchors.topMargin: 0
         anchors.bottomMargin: 0
         onDoubleClicked: {
-            if(engine_temp_outer.visible == true)
+            if(engine_temp_outer.visible == true){
                 engine_temp_outer.visible = false
-            else
+                backend.setSetting('gaugeThreeEngineTempHidden', "true")
+            }
+            else{
                 engine_temp_outer.visible = true
+                backend.setSetting('gaugeThreeEngineTempHidden', "false")
+            }
+        }
+        Component.onCompleted: {
+             var gaugeThreeEngineTempHiddenSetting = backend.getSetting("gaugeThreeEngineTempHidden")
+             if(gaugeThreeEngineTempHiddenSetting !== null)
+                engine_temp_outer.visible = !(gaugeThreeEngineTempHiddenSetting === 'true')
         }
     }
 

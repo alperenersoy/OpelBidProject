@@ -36,6 +36,16 @@ Item {
                 initialItem: "gauges/gaugeThree.qml"
             }
         }
+
+        Component.onCompleted: {
+            var currentGaugeSetting = backend.getSetting("currentGauge")
+            if(currentGaugeSetting)
+                swipeView.setCurrentIndex(parseInt(currentGaugeSetting))
+        }
+
+        onCurrentIndexChanged:{ 
+            backend.setSetting('currentGauge', swipeView.currentIndex)
+        }
     }
     Connections {
         target: gaugesPage

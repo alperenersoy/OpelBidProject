@@ -7,9 +7,9 @@ Item {
     height: 430
 
 
-    property double speed: 0
-    property double rpm: 0
-    property double engineTemp: 0
+    property double speed: 110
+    property double rpm: 60
+    property double engineTemp: 130
     property bool isCanOnline: false
 
     FontLoader{
@@ -52,7 +52,7 @@ Item {
                 color: "#ffffff"
                 text: qsTr("km/s")
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -50
+                anchors.bottomMargin: -60
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: 20
             }
@@ -77,7 +77,7 @@ Item {
             y: 39
             width: 98
             height: 20
-            visible: isCanOnline
+            visible: true
             color: "#ffffff"
             radius: 10
             border.color: "#7f353637"
@@ -183,7 +183,7 @@ Item {
             y: 39
             width: 98
             height: 20
-            visible: isCanOnline
+            visible: true
             color: "#ffffff"
             radius: 10
             border.color: "#7f353637"
@@ -296,9 +296,20 @@ Item {
         anchors.leftMargin: 0
         onDoubleClicked: {
             if(rpm_outer.visible == true)
+            {
                 rpm_outer.visible = false
+                backend.setSetting('gaugeOneRpmHidden', "true")
+            }
             else
+            {
                 rpm_outer.visible = true
+                backend.setSetting('gaugeOneRpmHidden', "false")
+            }
+        }
+        Component.onCompleted: {
+             var gaugeOneRpmHiddenSetting = backend.getSetting("gaugeOneRpmHidden")
+             if(gaugeOneRpmHiddenSetting !== null)
+                rpm_outer.visible = !(gaugeOneRpmHiddenSetting === 'true')
         }
     }
 
@@ -312,10 +323,19 @@ Item {
         anchors.topMargin: 0
         anchors.bottomMargin: 0
         onDoubleClicked: {
-            if(engine_temp_outer.visible == true)
+            if(engine_temp_outer.visible == true){
                 engine_temp_outer.visible = false
-            else
+                backend.setSetting('gaugeOneEngineTempHidden', "true")
+            }
+            else{
                 engine_temp_outer.visible = true
+                backend.setSetting('gaugeOneEngineTempHidden', "false")
+            }
+        }
+        Component.onCompleted: {
+             var gaugeOneEngineTempHiddenSetting = backend.getSetting("gaugeOneEngineTempHidden")
+             if(gaugeOneEngineTempHiddenSetting !== null)
+                engine_temp_outer.visible = !(gaugeOneEngineTempHiddenSetting === 'true')
         }
     }
 

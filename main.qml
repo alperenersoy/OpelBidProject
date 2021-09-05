@@ -459,11 +459,11 @@ Window {
         onTriggered:
         {
             clock.text = Qt.formatTime(new Date(),"hh:mm");
-            stackViewHome.currentItem.date = Qt.formatDateTime(new Date(), "dd.MM.yyyy")
+            /*stackViewHome.currentItem.date = Qt.formatDateTime(new Date(), "dd.MM.yyyy")
             stackViewHome.currentItem.clock = Qt.formatTime(new Date(),"hh:mm");
             stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;
             stackViewGauges.currentItem.speed = Math.floor(Math.random() * 150) + 1;
-            stackViewGauges.currentItem.engineTemp = Math.floor(Math.random() * 130) + 1;
+            stackViewGauges.currentItem.engineTemp = Math.floor(Math.random() * 130) + 1;*/
         }
     }
 

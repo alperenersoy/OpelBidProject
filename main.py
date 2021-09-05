@@ -99,20 +99,28 @@ class MainWindow(QObject):
         motionData = cardata.humanizeMotionData(data)
         self.speed.emit(motionData["speed"])
         self.rpm.emit(motionData["rpm"]/100)
+        print('speed:   ' + str(motionData["speed"]))
+        print('rpm:   ' + str(motionData["rpm"]))
+
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
         self.engineTemp.emit(engineData["engineTemp"])
         self.isEngineRunning.emit(engineData["isEngineRunning"])
         self.isCruiseControlActive.emit(engineData["isCruiseControlActive"])
+        print('engineTemp:   ' + str(engineData["engineTemp"]))
+
 
     def updateAirTemp(self, data):
         airTemp = cardata.humanizeAirTemp(data)
         self.airTemp.emit(airTemp)
+        print('engineTemp:   ' + str(airTemp))
+        
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)
         self.fuelPercentage.emit((fuelLevel * 100) / cardata.fuelCapacity)
+        print('engineTemp:   ' + str(fuelLevel))
 
     def triggerSWControl(self, data):
         triggeredControls = cardata.humanizeSWControls(data)
@@ -121,6 +129,7 @@ class MainWindow(QObject):
             triggeredControlObject = {
                 "control": triggeredControl, "time": timestamp}
             self.triggeredControl.emit(triggeredControlObject)
+        print(triggeredControls)
 
 
 if __name__ == "__main__":

@@ -476,14 +476,15 @@ Window {
                 {
                     if(!isHeadLightsOn)
                     {
-                        backend.setHeadLights(1)
+                        backend.setHeadLights(1);
+                        isHeadLightsOn = true;
                     }
                 }
                 else
                 {
                     if(isHeadLightsOn)
                     {
-                        backend.setHeadLights(0)
+                        backend.setHeadLights(0);
                     }
                 }
             }

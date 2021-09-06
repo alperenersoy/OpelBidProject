@@ -16,6 +16,7 @@ Window {
     property double airTemp: -100
     property bool isCanOnline: false
     property bool isCarStarted: false
+    property bool isHeadLightsOn: false
 
     Rectangle {
         id: topbar
@@ -472,7 +473,19 @@ Window {
                 var autoHeadLightsStartTime = Date.fromLocaleTimeString(locale, backend.getSetting("autoHeadLightsTimeStart"), Locale.ShortFormat)
                 var autoHeadLightsEndTime = Date.fromLocaleTimeString(locale, backend.getSetting("autoHeadLightsTimeEnd"), Locale.ShortFormat)
                 if(new Date() > autoHeadLightsStartTime || new Date() < autoHeadLightsEndTime)
-                    backend.runHeadLights()
+                {
+                    if(!isHeadLightsOn)
+                    {
+                        backend.setHeadLights(1)
+                    }
+                }
+                else
+                {
+                    if(isHeadLightsOn)
+                    {
+                        backend.setHeadLights(0)
+                    }
+                }
             }
 
             /*stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;

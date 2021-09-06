@@ -24,6 +24,7 @@ class MainWindow(QObject):
     settings = EasySettings("settings.conf")
     
     currentIgnitionStatus = ""
+    headLightLoop = None
 
     isCanOnline = Signal(bool)
     speed = Signal(float)
@@ -51,14 +52,18 @@ class MainWindow(QObject):
         else:
             return None
 
-    @Slot()
-    def runHeadLights(self):
-        try:
-            if(self.bus is not None):
-                self.bus.send(cardata.HEAD_LIGHTS_ON, 0.2)
-                print("Head lights on message sent.")
-        except can.CanError:
-            print("Head lights on message NOT sent.")
+    @Slot(int)
+    def setHeadLights(self, status):
+        if status == 1:
+            try:
+                if self.bus is not None:
+                    self.headLightLoop = self.bus.send_periodic(cardata.HEAD_LIGHTS_ON, 0.20, 1, store_task=False)
+                    print("Head lights on loop started.")
+            except can.CanError:
+                print("Head lights on message NOT sent.")
+        else:
+            if self.headLightLoop is not None:
+                self.headLightLoop.stop()
 
     def emitDefaults(self):
         self.isEngineRunning.emit(False)

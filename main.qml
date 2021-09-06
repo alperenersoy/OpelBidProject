@@ -13,7 +13,7 @@ Window {
     title: qsTr("Opel BID")
     //visibility: 'FullScreen'
     
-    property double airTemp: 0
+    property double airTemp: -100
     property bool isCanOnline: false
     property bool isCarStarted: false
 
@@ -259,12 +259,12 @@ Window {
                         id: temp
                         y: 13
                         color: "#ffffff"
-                        text: airTemp
+                        text: airTemp == -100 ? '--' : airTemp
+                        visible: airTemp != -100
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         font.pixelSize: 24
                         anchors.rightMargin: 45
-                        visible:isCanOnline
 
                         Text {
                             id: degree
@@ -272,6 +272,7 @@ Window {
                             y: 0
                             color: "#ffffff"
                             text: qsTr("°C")
+                            visible: airTemp != -100
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
                             font.pixelSize: 24
@@ -301,7 +302,7 @@ Window {
                     Text {
                         id: temp1
                         y: 13
-                        visible: isCanOnline
+                        visible: true
                         color: "#ffffff"
                         text: airTemp
                         anchors.verticalCenter: parent.verticalCenter
@@ -458,10 +459,23 @@ Window {
 
         onTriggered:
         {
-            clock.text = Qt.formatTime(new Date(),"hh:mm");
-            /*stackViewHome.currentItem.date = Qt.formatDateTime(new Date(), "dd.MM.yyyy")
-            stackViewHome.currentItem.clock = Qt.formatTime(new Date(),"hh:mm");
-            stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;
+            var nowDate =  Qt.formatDateTime(new Date(), "dd.MM.yyyy");
+            var nowTime = Qt.formatTime(new Date(),"hh:mm");
+            
+            clock.text = nowTime;
+            stackViewHome.currentItem.clock = nowTime;
+            stackViewHome.currentItem.date = nowDate;
+
+            if(backend.getSetting("autoHeadLights"))
+            {
+                var locale = Qt.locale();
+                var autoHeadLightsStartTime = Date.fromLocaleTimeString(locale, backend.getSetting("autoHeadLightsTimeStart"), Locale.ShortFormat)
+                var autoHeadLightsEndTime = Date.fromLocaleTimeString(locale, backend.getSetting("autoHeadLightsTimeEnd"), Locale.ShortFormat)
+                if(new Date() > autoHeadLightsStartTime || new Date() < autoHeadLightsEndTime)
+                    backend.runHeadLights()
+            }
+
+            /*stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;
             stackViewGauges.currentItem.speed = Math.floor(Math.random() * 150) + 1;
             stackViewGauges.currentItem.engineTemp = Math.floor(Math.random() * 130) + 1;*/
         }
@@ -512,53 +526,18 @@ Window {
 
         function onTriggeredControl(triggeredControl)
         {
-            if(triggeredControl.control == 'LEFT_KNOB_UP')
-                swipeView.setCurrentIndex = swipeView.currentIndex+1
-            else if(triggeredControl.control == 'LEFT_KNOB_DOWN')
-                swipeView.setCurrentIndex = swipeView.currentIndex-1
+            if(triggeredControl == 'LEFT_KNOB_UP')
+                swipeView.setCurrentIndex(swipeView.currentIndex+1)
+            else if(triggeredControl == 'LEFT_KNOB_DOWN')
+                swipeView.setCurrentIndex(swipeView.currentIndex-1)
         }
 
         function onIsEngineRunning(isEngineRunning)
         {
-            /*if(isEngineRunning)
-            {
-                isCanOnline = true;
-                swipeView.interactive = true;
-                stackViewHome.currentItem.isCanOnline = true;
-                stackViewGauges.currentItem.isCanOnline = true;
-                stackViewDtc.currentItem.isCanOnline=true;
-            }
-            else
-            {
-                isCanOnline = false;
-                stackViewHome.currentItem.isCanOnline = false;
-                stackViewGauges.currentItem.isCanOnline = false;
-                stackViewDtc.currentItem.isCanOnline=false;
-                swipeView.setCurrentIndex(0);
-                swipeView.interactive = false;
-            }*/
         }
 
         function onIsCanOnline(isCanOnline)
         {
-            /*if(isCanOnline)
-            {
-                isCanOnline = true;
-                swipeView.interactive = true;
-                stackViewHome.currentItem.isCanOnline = true;
-                stackViewGauges.currentItem.isCanOnline = true;
-                stackViewDtc.currentItem.isCanOnline=true;
-            }
-
-            else
-            {
-                isCanOnline = false;
-                stackViewHome.currentItem.isCanOnline = false;
-                stackViewGauges.currentItem.isCanOnline = false;
-                stackViewDtc.currentItem.isCanOnline=false;
-                swipeView.setCurrentIndex(0);
-                swipeView.interactive = false;
-            }*/
         }
 
     }

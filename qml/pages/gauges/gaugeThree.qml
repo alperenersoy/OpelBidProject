@@ -7,9 +7,9 @@ Item {
     height: 430
 
 
-    property double speed: 104
-    property double rpm: 60
-    property double engineTemp: 130
+    property double speed: 0
+    property double rpm: 0
+    property double engineTemp: 0
     property bool isCanOnline: false
 
     FontLoader{

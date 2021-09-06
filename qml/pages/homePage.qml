@@ -8,7 +8,7 @@ Item {
 
     property string date: Qt.formatDateTime(new Date(), "dd.MM.yyyy")
     property string clock: Qt.formatTime(new Date(),"hh:mm")
-    property double temp: 0
+    property double temp: -100
     property bool isCanOnline: false
 
     FontLoader{
@@ -72,7 +72,7 @@ Item {
                 width: 88
                 height: 71
                 color: "#ffffff"
-                text: temp + " °C"
+                text: temp == -100 ? '--' : temp + " °C"
                 font.family: fontLoader.name
                 anchors.bottom: parent.bottom
                 font.pixelSize: 30
@@ -80,7 +80,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 anchors.bottomMargin: -100
                 anchors.horizontalCenter: parent.horizontalCenter
-                visible:isCanOnline
+                visible: temp != -100
             }
         }
 

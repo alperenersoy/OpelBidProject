@@ -1,31 +1,61 @@
+import can
 fuelCapacity = 58  # For Opel Zafira B
 
 canMessages = {
-    0x108:   "MOTION",  # speed and rpm
-    0x145:   "ENGINE",  # coolant, running state and cruise control
-    0x445:   "AIR_TEMP",
-    0x375:   "FUEL_LEVEL",
-    0x175:   "SW_CONTROL", # any steering wheel control including turn signals and glass wash
-    0x500:   "VOLTAGE"
+    0x108:  "MOTION",  # speed and rpm
+    0x145:  "ENGINE",  # coolant, running state and cruise control
+    0x445:  "AIR_TEMP",
+    0x375:  "FUEL_LEVEL",
+    0x175:  "SW_CONTROL",  # any steering wheel control including turn signals and glass wash
+    0x500:  "VOLTAGE",
+    0x230:  "DOOR_OPEN",
+    0x260:  "HAZARD_LIGHTS",
+    0X305:  "HEAD_LIGHTS",
+    0X350:  "GEAR_STATUS",  # reverse or not
+    0X370:  "HANDBRAKE_STATUS",
+    0x170:  "IGNITION_STATUS",
+    0X160:  "KEY_BUTTONS"
 }
 
+# constants
+HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x260,
+                               data=[0x1F, 0x43, 0x7F])
+HAZARD_LIGHTS_OFF = can.Message(arbitration_id=0x260,
+                               data=[0x00, 0x00, 0x00])
+SIDE_LIGHTS_ON = can.Message(arbitration_id=0x305,
+                               data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00]) #must be send in a loop. automatic off
+HEAD_LIGHTS_ON = can.Message(arbitration_id=0x305,
+                               data=[0x00, 0x00, 0xC0, 0x00, 0x10, 0x00, 0x00, 0x00]) #must be send in a loop. automatic off
+HIGH_BEAM_LIGHTS_ON = can.Message(arbitration_id=175,
+                               data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+HIGH_BEAM_LIGHTS_OFF = can.Message(arbitration_id=175,
+                               data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+KEY_BUTTONS_LOCK = can.Message(arbitration_id=0x305,
+                               data=[0x02, 0x40, 0x05, 0x8F])
+KEY_BUTTONS_UNLOCK = can.Message(arbitration_id=0x305,
+                               data=[0x02, 0x10, 0x05, 0x8F])
+KEY_BUTTONS_LOCK_HOLD = can.Message(arbitration_id=0x305,
+                               data=[0x02, 0xC0, 0x05, 0x8F]) #closing windows
+KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x305,
+                               data=[0x02, 0x30, 0x05, 0x8F]) #opening windows
 
 def humanizeMotionData(data):
     data = convertByteArrayToList(data)
+    isIgnitionOn = (False, True)[data[0] == "03"] #before running engine
+    isEngineRunning = (False, True)[data[0] == "13"]
     speedHex = data[4] + data[5]
     speed = int(round(int(speedHex, 16) / 128))
     rpmHex = data[1] + data[2]
     rpm = int(rpmHex, 16) / 4
-    return {"speed": speed, "rpm": rpm}
+    return {"isIgnitionOn": isIgnitionOn, "isEngineRunning": isEngineRunning, "speed": speed, "rpm": rpm}
 
 
 def humanizeEngineData(data):
     data = convertByteArrayToList(data)
-    isEngineRunning = (False, True)[data[1] == "01"]
     isCruiseControlActive = (False, True)[data[5] == "06"]
     engineTempHex = data[3]
     engineTemp = int(engineTempHex, 16) - 40
-    return {"isEngineRunning": isEngineRunning, "isCruiseControlActive": isCruiseControlActive, "engineTemp": engineTemp}
+    return {"isCruiseControlActive": isCruiseControlActive, "engineTemp": engineTemp}
 
 
 def humanizeAirTemp(data):
@@ -55,9 +85,9 @@ def humanizeSWControls(data):
     elif(data[4] == "04"):
         triggeredControls.append('RIGHT_SIGNAL_FULL')
 
-    if(data[5] == "01" and data[7] == 0x01):
+    if(data[6] == "01" and data[8] == "01"):
         triggeredControls.append('RIGHT_KNOB_UP')  # volume up
-    elif(data[5] == "02" and data[7] == 0x1F):
+    elif(data[6] == "02" and data[8] == "1F"):
         triggeredControls.append('RIGHT_KNOB_DOWN')  # volume down
     elif(data[5] == "04"):
         triggeredControls.append('RIGHT_BUTTON_UP')  # next track
@@ -82,11 +112,58 @@ def humanizeVoltage(data):
     voltage = int(voltageHex, 16) / 8
     return voltage
 
-def convertByteArrayToList(bytearr): #is this really required??
+
+def humanizeDoorOpenData(data):
+    data = convertByteArrayToList(data)
+    openedDoors = []
+    if data[2] == "44":
+        openedDoors.append("FRONT_LEFT")
+    elif data[2] == "04":
+        openedDoors.append("TRUNK")
+    elif data[1] == "50" and data[2] == "10":
+        openedDoors.append("BACK_RIGHT")
+    elif data[1] == "50" and data[2] == "50":
+        openedDoors.append("FRONT_LEFT")
+        openedDoors.append("BACK_RIGHT")
+    elif data[1] == "50" and data[2] == "14":
+        openedDoors.append("TRUNK")
+        openedDoors.append("BACK_RIGHT")
+    elif data[1] == "50" and data[2] == "54":
+        openedDoors.append("FRONT_LEFT")
+        openedDoors.append("BACK_RIGHT")
+        openedDoors.append("TRUNK")
+    return openedDoors
+    
+def humanizeGearData(data):
+    data = convertByteArrayToList(data)
+    if data[0] == "12":
+        return "REVERSE"
+    elif data[0] == "02":
+        return "NOT_REVERSE"
+
+def humanizeHandBrakeData(data):
+    data = convertByteArrayToList(data)
+    if data[0] == "01":
+        return "PULLED"
+    elif data[0] == "00":
+        return "NOT_PULLED"
+
+def humanizeIgnitionData(data):
+    data = convertByteArrayToList(data)
+    if data[0] == "70":
+        return "LOCK"
+    elif data[0] == "72":
+        return "ACCESSORY"
+    elif data[0] == "74":
+        return "ON"
+    elif data[0] == "76":
+        return "START"
+
+def convertByteArrayToList(bytearr):  # is this really required??
     hexList = list(bytearr.hex())
     resultList = []
     for i, value in enumerate(hexList):
-        if i%2 == 0:
+        if i % 2 == 0:
             resultList.append(hexList[i] + hexList[i+1])
     resultList = [elem.upper() for elem in resultList]
     return resultList

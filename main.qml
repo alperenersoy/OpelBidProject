@@ -453,7 +453,7 @@ Window {
 
     Timer {
         id: timer
-        interval: 175
+        interval: 750
         repeat: true
         running: true
 

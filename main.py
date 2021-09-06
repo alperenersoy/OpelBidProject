@@ -55,7 +55,7 @@ class MainWindow(QObject):
     def runHeadLights(self):
         try:
             if(self.bus is not None):
-                self.bus.send(cardata.HEAD_LIGHTS_ON)
+                self.bus.send(cardata.HEAD_LIGHTS_ON, 0.2)
                 print("Head lights on message sent.")
         except can.CanError:
             print("Head lights on message NOT sent.")

@@ -12,16 +12,16 @@ canMessages = {
 
 def humanizeMotionData(data):
     data = convertByteArrayToList(data)
-    speedHex = data[1] + data[2]
+    speedHex = data[4] + data[5]
     speed = int(round(int(speedHex, 16) / 128))
-    rpmHex = data[4] + data[5]
-    rpm = int(rpmHex, 16)
+    rpmHex = data[1] + data[2]
+    rpm = int(rpmHex, 16) / 4
     return {"speed": speed, "rpm": rpm}
 
 
 def humanizeEngineData(data):
     data = convertByteArrayToList(data)
-    isEngineRunning = (False, True)[data[4] == "A0"]
+    isEngineRunning = (False, True)[data[1] == "01"]
     isCruiseControlActive = (False, True)[data[5] == "06"]
     engineTempHex = data[3]
     engineTemp = int(engineTempHex, 16) - 40

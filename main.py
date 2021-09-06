@@ -84,23 +84,23 @@ class MainWindow(QObject):
         self.thread.start()
 
     def checkCanMessage(self, id, data):
-        if(cardata.canMessages[id] == 'MOTION'):
+        if(id in cardata.canMessages and cardata.canMessages[id] == 'MOTION'):
             self.updateMotionData(data)
-        elif(cardata.canMessages[id] == 'ENGINE'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'ENGINE'):
             self.updateEngineData(data)
-        elif(cardata.canMessages[id] == 'AIR_TEMP'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'AIR_TEMP'):
             self.updateAirTemp(data)
-        elif(cardata.canMessages[id] == 'FUEL_LEVEL'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'FUEL_LEVEL'):
             self.updateFuelLevel(data)
-        elif(cardata.canMessages[id] == 'SW_CONTROL'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'SW_CONTROL'):
             self.triggerSWControl(data)
 
     def updateMotionData(self, data):
         motionData = cardata.humanizeMotionData(data)
         self.speed.emit(motionData["speed"])
         self.rpm.emit(motionData["rpm"]/100)
-        print('speed:   ' + str(motionData["speed"]))
-        print('rpm:   ' + str(motionData["rpm"]))
+        #print('speed:   ' + str(motionData["speed"]))
+        #print('rpm:   ' + str(motionData["rpm"]))
 
 
     def updateEngineData(self, data):
@@ -108,19 +108,19 @@ class MainWindow(QObject):
         self.engineTemp.emit(engineData["engineTemp"])
         self.isEngineRunning.emit(engineData["isEngineRunning"])
         self.isCruiseControlActive.emit(engineData["isCruiseControlActive"])
-        print('engineTemp:   ' + str(engineData["engineTemp"]))
+        print('isEngineRunning:   ' + str(engineData["isEngineRunning"]))
 
 
     def updateAirTemp(self, data):
         airTemp = cardata.humanizeAirTemp(data)
         self.airTemp.emit(airTemp)
-        print('engineTemp:   ' + str(airTemp))
+        #print('airTemp:   ' + str(airTemp))
         
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)
         self.fuelPercentage.emit((fuelLevel * 100) / cardata.fuelCapacity)
-        print('engineTemp:   ' + str(fuelLevel))
+        print('fuel:   ' + str(fuelLevel))
 
     def triggerSWControl(self, data):
         triggeredControls = cardata.humanizeSWControls(data)

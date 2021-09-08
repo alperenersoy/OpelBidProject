@@ -450,6 +450,17 @@ Window {
         }
     }
 
+    Timer{
+        id: emitValuesTimer
+        interval: 30
+        repeat: true
+        running: true
+
+        onTriggered:
+        {
+            backend.emitValues()
+        }
+    }
 
 
     Timer {
@@ -467,7 +478,8 @@ Window {
             stackViewHome.currentItem.clock = nowTime;
             stackViewHome.currentItem.date = nowDate;
 
-            if(backend.getSetting("autoHeadLights"))
+            //if(backend.getSetting("autoHeadLights"))
+            if(false)
             {
                 var locale = Qt.locale();
                 var autoHeadLightsStartTime = Date.fromLocaleTimeString(locale, backend.getSetting("autoHeadLightsTimeStart"), Locale.ShortFormat)
@@ -540,8 +552,9 @@ Window {
 
         function onTriggeredControl(triggeredControl)
         {
-            if(triggeredControl == 'LEFT_KNOB_UP')
-                swipeView.setCurrentIndex(swipeView.currentIndex+1)
+            if(triggeredControl == 'LEFT_KNOB_UP'){
+		console.log("up")
+                swipeView.setCurrentIndex(swipeView.currentIndex+1)}
             else if(triggeredControl == 'LEFT_KNOB_DOWN')
                 swipeView.setCurrentIndex(swipeView.currentIndex-1)
         }

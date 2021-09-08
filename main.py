@@ -252,4 +252,4 @@ if __name__ == "__main__":
     main.startCanLoop()
     if not engine.rootObjects():
         sys.exit(-1)
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

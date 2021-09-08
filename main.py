@@ -25,6 +25,7 @@ class MainWindow(QObject):
     
     currentIgnitionStatus = ""
     headLightLoop = None
+    hazardLightOn = False
 
     isCanOnline = Signal(bool)
     speed = Signal(float)
@@ -57,12 +58,13 @@ class MainWindow(QObject):
         if status == 1:
             try:
                 if self.bus is not None:
-                    self.headLightLoop = self.bus.send_periodic(cardata.HEAD_LIGHTS_ON, 0.20, 1, store_task=False)
+                    #self.headLightLoop = self.bus.send_periodic(cardata.HEAD_LIGHTS_ON, 0.00001)
                     print("Head lights on loop started.")
             except can.CanError:
                 print("Head lights on message NOT sent.")
         else:
             if self.headLightLoop is not None:
+                print("head lights stopped")
                 self.headLightLoop.stop()
 
     def emitDefaults(self):
@@ -74,8 +76,7 @@ class MainWindow(QObject):
 
     # define can information for MCP2515 and GMLAN Single Wire Can (LSCAN)
     try:
-        bus = can.interface.Bus(bustype='socketcan',
-                                channel='can0', bitrate=33300)
+        bus = can.interface.Bus(bustype='socketcan',channel='can0', bitrate=33300)
     except:
         print("Can bus başlatılamıyor.")
 
@@ -137,15 +138,17 @@ class MainWindow(QObject):
         if(self.settings.has_option("hazardLightsOnReverse") and bool(self.settings.get("hazardLightsOnReverse")) == True):
             if(gearStatus == 'REVERSE'):
                 try:
-                    if(self.bus is not None):
+                    if(self.bus is not None and self.hazardLightOn == False):
                         self.bus.send(cardata.HAZARD_LIGHTS_ON)
+                        self.hazardLightOn = True
                         print("Hazard lights on message sent.")
                 except can.CanError:
                     print("Hazard lights on message NOT sent.")
             else:
                 try:
-                    if(self.bus is not None):
+                    if(self.bus is not None and self.hazardLightOn == True):
                         self.bus.send(cardata.HAZARD_LIGHTS_OFF)
+                        self.hazardLightOn = False
                         print("Hazard lights off message sent.")
                 except can.CanError:
                     print("Hazard lights off message NOT sent.")
@@ -153,7 +156,8 @@ class MainWindow(QObject):
         ignitionStatus = cardata.humanizeIgnitionData(data)
         if(self.currentIgnitionStatus == "ACCESSORY" and ignitionStatus == "ON"):
             if(self.settings.has_option("needleSweep") and bool(self.settings.get("needleSweep")) == True):
-                self.needleSweep()
+                print("needle")
+                #self.needleSweep()
         if(self.currentIgnitionStatus == "" or ignitionStatus != self.currentIgnitionStatus):
             self.currentIgnitionStatus = ignitionStatus
 
@@ -163,9 +167,7 @@ class MainWindow(QObject):
         self.rpm.emit(int(motionData["rpm"]/100))
         self.isEngineRunning.emit(motionData["isEngineRunning"])
         self.isIgnitionOn.emit(motionData["isIgnitionOn"])
-        print('ignitionOn:   ' + str(motionData["isIgnitionOn"]))
-        print('engineRunning:   ' + str(motionData["isEngineRunning"]))
-
+        
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
         self.engineTemp.emit(int(engineData["engineTemp"]))
@@ -218,7 +220,7 @@ class MainWindow(QObject):
                         break
 
                 msg = can.Message(arbitration_id=0x108,
-                                  data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0])
+                                  data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id = False)
 
                 if self.bus is not None:
                     try:

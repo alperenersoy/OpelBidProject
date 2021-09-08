@@ -540,8 +540,9 @@ Window {
 
         function onTriggeredControl(triggeredControl)
         {
-            if(triggeredControl == 'LEFT_KNOB_UP')
-                swipeView.setCurrentIndex(swipeView.currentIndex+1)
+            if(triggeredControl == 'LEFT_KNOB_UP'){
+		console.log("up")
+                swipeView.setCurrentIndex(swipeView.currentIndex+1)}
             else if(triggeredControl == 'LEFT_KNOB_DOWN')
                 swipeView.setCurrentIndex(swipeView.currentIndex-1)
         }

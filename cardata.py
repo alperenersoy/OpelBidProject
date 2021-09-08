@@ -18,26 +18,25 @@ canMessages = {
 }
 
 # constants
-HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x260,
-                               data=[0x1F, 0x43, 0x7F])
+HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x260,data=[0x1F, 0x43, 0x7F], is_extended_id = False)
 HAZARD_LIGHTS_OFF = can.Message(arbitration_id=0x260,
-                               data=[0x00, 0x00, 0x00])
+                               data=[0x00, 0x00, 0x00], is_extended_id = False)
 SIDE_LIGHTS_ON = can.Message(arbitration_id=0x305,
-                               data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00]) #must be send in a loop. automatic off
+                               data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00], is_extended_id = False) #must be send in a loop. automatic off
 HEAD_LIGHTS_ON = can.Message(arbitration_id=0x305,
-                               data=[0x00, 0x00, 0xC0, 0x00, 0x10, 0x00, 0x00, 0x00]) #must be send in a loop. automatic off
+                               data=[0x00, 0x00, 0xC0, 0x00, 0x10, 0x00, 0x80, 0x00], is_extended_id = False) #must be send in a loop. automatic off
 HIGH_BEAM_LIGHTS_ON = can.Message(arbitration_id=175,
-                               data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+                               data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id = False)
 HIGH_BEAM_LIGHTS_OFF = can.Message(arbitration_id=175,
-                               data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+                               data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id = False)
 KEY_BUTTONS_LOCK = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x40, 0x05, 0x8F])
+                               data=[0x02, 0x40, 0x05, 0x8F], is_extended_id = False)
 KEY_BUTTONS_UNLOCK = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x10, 0x05, 0x8F])
+                               data=[0x02, 0x10, 0x05, 0x8F], is_extended_id = False)
 KEY_BUTTONS_LOCK_HOLD = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0xC0, 0x05, 0x8F]) #closing windows
+                               data=[0x02, 0xC0, 0x05, 0x8F], is_extended_id = False) #closing windows
 KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x30, 0x05, 0x8F]) #opening windows
+                               data=[0x02, 0x30, 0x05, 0x8F], is_extended_id = False) #opening windows
 
 def humanizeMotionData(data):
     data = convertByteArrayToList(data)
@@ -85,9 +84,9 @@ def humanizeSWControls(data):
     elif(data[4] == "04"):
         triggeredControls.append('RIGHT_SIGNAL_FULL')
 
-    if(data[6] == "01" and data[8] == "01"):
+    if(data[5] == "01" and data[7] == "01"):
         triggeredControls.append('RIGHT_KNOB_UP')  # volume up
-    elif(data[6] == "02" and data[8] == "1F"):
+    elif(data[5] == "02" and data[7] == "1F"):
         triggeredControls.append('RIGHT_KNOB_DOWN')  # volume down
     elif(data[5] == "04"):
         triggeredControls.append('RIGHT_BUTTON_UP')  # next track

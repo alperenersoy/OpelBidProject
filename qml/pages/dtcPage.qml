@@ -79,7 +79,8 @@ Item {
             radius: 10
         }
         onClicked: {
-            listView.model.clear();
+            backend.needleSweep()
+            /*listView.model.clear();
             loading.opacity = 1
             delay(10, function() {
                 var dtcErrors = backend.getDtcErrors();
@@ -93,7 +94,7 @@ Item {
                 else
                     listView.model.append({errorCode:"Her şey yolunda!",details:"Hata bulunamadı."});
                 loading.opacity = 0
-            })
+            })*/
 
 
         }

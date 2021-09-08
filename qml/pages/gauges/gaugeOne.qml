@@ -11,6 +11,7 @@ Item {
     property double rpm: 0
     property double engineTemp: 0
     property bool isCanOnline: false
+    property bool isCruiseControlActive: false
 
     FontLoader{
         id: fontLoader
@@ -32,7 +33,7 @@ Item {
             id: kilometer
             y: 114
             height: 160
-            color: "#ffffff"
+            color: isCruiseControlActive ? "#00ff00" : "#ffffff"
             text: speed
             font.family: fontLoaderBold.name
             anchors.verticalCenter: parent.verticalCenter

@@ -7,6 +7,9 @@ Item {
     property double rpm: 0
     property double engineTemp: 0
     property bool isCanOnline: false
+    property bool isEngineRunning: false
+    property bool isIgnitionOn: false
+    property bool isCruiseControlActive: false
 
     SwipeView {
         id: swipeView
@@ -64,15 +67,17 @@ Item {
             stackViewGauge2.currentItem.engineTemp = engineTemp
             stackViewGauge3.currentItem.engineTemp = engineTemp
         }
-        /*onisCanOnlineChanged: {
-            stackViewGauge1.currentItem.isCanOnline = isCanOnline
-            stackViewGauge2.currentItem.isCanOnline = isCanOnline
-            stackViewGauge3.currentItem.isCanOnline = isCanOnline
-        }*/
+        onIsEngineRunningChanged:
+        {
+
+        }
+        onIsCruiseControlActiveChanged:
+        {
+            stackViewGauge1.currentItem.isCruiseControlActive = isCruiseControlActive
+            stackViewGauge2.currentItem.isCruiseControlActive = isCruiseControlActive
+            stackViewGauge3.currentItem.isCruiseControlActive = isCruiseControlActive
+        }
     }
-
-
-
 }
 
 /*##^##

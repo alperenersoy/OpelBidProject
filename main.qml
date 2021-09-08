@@ -511,6 +511,8 @@ Window {
     {
         target: backend
 
+        onSpeed: console.log()
+
         function onSpeed(speed)
         {
             if(speed)

@@ -49,6 +49,11 @@ Item {
     }
     Connections {
         target: gaugesPage
+	onSpeedChanged: {
+            stackViewGauge1.currentItem.speed = speed
+            stackViewGauge2.currentItem.speed = speed
+            stackViewGauge3.currentItem.speed = speed
+	}
        function onSpeedChanged() {
             stackViewGauge1.currentItem.speed = speed
             stackViewGauge2.currentItem.speed = speed

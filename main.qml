@@ -333,7 +333,6 @@ Window {
 
     SwipeView {
         id: swipeView
-        anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -510,11 +509,13 @@ Window {
     Connections
     {
         target: backend
+	onSpeed: stackViewGauges.currentItem.speed = parseFloat(backend.getCurrentSpeed())
 
         onSpeed: console.log()
 
         function onSpeed(speed)
         {
+	    console.log(speed)
             if(speed)
                 stackViewGauges.currentItem.speed = speed
         }
@@ -559,14 +560,6 @@ Window {
                 swipeView.setCurrentIndex(swipeView.currentIndex+1)}
             else if(triggeredControl == 'LEFT_KNOB_DOWN')
                 swipeView.setCurrentIndex(swipeView.currentIndex-1)
-        }
-
-        function onIsEngineRunning(isEngineRunning)
-        {
-        }
-
-        function onIsCanOnline(isCanOnline)
-        {
         }
 
     }

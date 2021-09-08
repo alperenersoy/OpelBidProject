@@ -41,13 +41,8 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     triggeredControl = Signal(str)
 
-    @Slot(result=float)
-    def getCurrentSpeed(self):
-        return self.currentSpeed
-
     @Slot()
     def emitValues(self):
-        self.currentSpeed = randrange(150)
         self.speed.emit(self.currentSpeed)
 
     @Slot(str, str)
@@ -77,6 +72,7 @@ class MainWindow(QObject):
                 self.headLightLoop.stop()
 
     def emitDefaults(self):
+        self.speed.emit(150)
         self.isEngineRunning.emit(False)
         self.isIgnitionOn.emit(False)
         self.isCanOnline.emit(False)
@@ -113,9 +109,9 @@ class MainWindow(QObject):
     thread = None
 
     def startCanLoop(self):
-        self.thread = threading.Thread(target=self.canLoop, daemon=True)
-        self.thread.start()
-
+        print()
+        #self.thread = threading.Thread(target=self.canLoop, daemon=True)
+        #self.thread.start()
 
     def checkCanMessage(self, id, data):
         if(id in cardata.canMessages and cardata.canMessages[id] == 'MOTION'):
@@ -254,7 +250,7 @@ if __name__ == "__main__":
     engine.rootContext().setContextProperty("backend", main)
     engine.load(os.fspath(Path(__file__).resolve().parent / "main.qml"))
     main.emitDefaults()
-    main.startCanLoop()
+    main.s
     if not engine.rootObjects():
         sys.exit(-1)
     sys.exit(app.exec_())

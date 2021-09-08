@@ -41,9 +41,9 @@ class MainWindow(QObject):
     isIgnitionOn = Signal(bool)
     currentIsIgnitionOn = None
     isEngineRunning = Signal(bool)
-    currentIsEngineRunnging = None
+    currentIsEngineRunning = False
     isCruiseControlActive = Signal(bool)
-    currentIsCruiseControlActive = None
+    currentIsCruiseControlActive = False
     triggeredControl = Signal(str)
     currentTriggeredControl= None
 
@@ -68,8 +68,8 @@ class MainWindow(QObject):
         return self.currentIsIgnitionOn
     
     @Slot(result=bool)
-    def getCurrentIsEngineRunnging(self):
-        return self.currentIsEngineRunnging
+    def getcurrentIsEngineRunning(self):
+        return self.currentIsEngineRunning
 
     @Slot(result=bool)
     def getCurrentIsCruiseControlActive(self):
@@ -79,16 +79,9 @@ class MainWindow(QObject):
     def getCurrentTriggeredControl(self):
         return self.triggeredControl
 
-    @Slot()
-    def emitValues(self):
-        self.currentSpeed = randrange(150)
-        self.currentRpm = randrange(60)
-        self.currentEngineTemp = randrange(130)
-        self.currentAirTemp = randrange(40)
-        self.speed.emit(self.currentSpeed)
-        self.rpm.emit(self.currentRpm)
-        self.engineTemp.emit(self.currentEngineTemp)
-        self.airTemp.emit(self.currentEngineTemp)
+    @Slot(result=bool)
+    def getCurrentIsCanOnline(self):
+        return self.currentIsCanOnline
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -131,8 +124,8 @@ class MainWindow(QObject):
         print("Can bus başlatılamıyor.")
 
     def canLoop(self):
-        self.currentSpeed = randrange(150)
         if self.bus is not None:
+            self.currentIsCanOnline = True
             self.isCanOnline.emit(True)
             while True:
                 msg = self.bus.recv()
@@ -148,6 +141,7 @@ class MainWindow(QObject):
                 if self.bus is not None:
                     self.canLoop()
                     break
+            self.currentIsCanOnline = False
             self.isCanOnline.emit(False)
 
     thread = None
@@ -217,31 +211,40 @@ class MainWindow(QObject):
 
     def updateMotionData(self, data):
         motionData = cardata.humanizeMotionData(data)
-        self.speed.emit(float(motionData["speed"]))
-        self.rpm.emit(int(motionData["rpm"]/100))
-        self.isEngineRunning.emit(motionData["isEngineRunning"])
-        self.isIgnitionOn.emit(motionData["isIgnitionOn"])
+        self.currentSpeed = float(motionData["speed"])
+        self.currentRpm = int(motionData["rpm"]/100)
+        self.currentIsEngineRunning = motionData["isEngineRunning"]
+        self.currentIsIgnitionOn = motionData["isIgnitionOn"]
+        self.speed.emit(self.currentSpeed)
+        self.rpm.emit(self.currentRpm)
+        self.isEngineRunning.emit(self.currentIsEngineRunning)
+        self.isIgnitionOn.emit(self.currentIsIgnitionOn)
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
-        self.engineTemp.emit(int(engineData["engineTemp"]))
-        self.isCruiseControlActive.emit(engineData["isCruiseControlActive"])
+        self.currentEngineTemp = int(engineData["engineTemp"])
+        self.isCruiseControlActive = engineData["isCruiseControlActive"]
+        self.engineTemp.emit(self.currentEngineTemp)
+        self.isCruiseControlActive.emit(self.currentEngineTemp)
 
     def updateAirTemp(self, data):
         airTemp = cardata.humanizeAirTemp(data)
-        self.airTemp.emit(float(airTemp))
+        self.currentAirTemp(float(airTemp))
+        self.airTemp.emit(self.currentAirTemp)
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)
-        self.fuelPercentage.emit(
-            (float(fuelLevel) * 100) / cardata.fuelCapacity)
+        self.currentFuelPercentage = (float(fuelLevel) * 100) / cardata.fuelCapacity
+        self.fuelPercentage.emit(self.currentFuelPercentage)
 
     def triggerSWControl(self, data):
         triggeredControls = cardata.humanizeSWControls(data)
         for triggeredControl in triggeredControls:
-            self.triggeredControl.emit(triggeredControl)
-
+            self.currentTriggeredControl = triggeredControl
+            self.triggeredControl.emit(self.currentTriggeredControl)
+    @Slot()
     def needleSweep(self):
+        print("on")
         counter = 0
         direction = 0  # 0: forward 1: backward
         speedRmpRate = 3.25  # calculated for 8000 rpm and 260 km/s speed
@@ -253,36 +256,36 @@ class MainWindow(QObject):
             elapsed_time = current_time - start_time
             if math.floor(elapsed_time / interval) > tour:
                 # time ticked
-                if counter % 10 == 0: #reduce loops to empathize with buffer
-                    if direction == 0:
-                        if counter < 260:
-                            speed1 = int(math.floor(counter/256))
-                            speed2 = int(counter % 256)
-                            rpm1 = int(math.floor(counter*100/speedRmpRate/256)) # multiply rpm by 100 to calculate exact 4 digit rpm
-                            rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
-                            counter += 1
-                        else:
-                            direction = 1
-                    elif direction == 1:
-                        if counter >= 0:
-                            speed1 = int(math.floor(counter/256))
-                            speed2 = int(counter % 256)
-                            rpm1 = int(math.floor(counter*100/speedRmpRate/256))
-                            rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
-                            counter -= 1
-                        else:
-                            break
+                if direction == 0:
+                    if counter < 260:
+                        speed1 = int(math.floor(counter/256))
+                        speed2 = int(counter % 256)
+                        rpm1 = int(math.floor(counter*100/speedRmpRate/256)) # multiply rpm by 100 to calculate exact 4 digit rpm
+                        rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
+                        counter += 1
+                    else:
+                        direction = 1
+                elif direction == 1:
+                    if counter >= 0:
+                        speed1 = int(math.floor(counter/256))
+                        speed2 = int(counter % 256)
+                        rpm1 = int(math.floor(counter*100/speedRmpRate/256))
+                        rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
+                        counter -= 1
+                    else:
+                        break
 
-                    msg = can.Message(arbitration_id=0x108,
-                                    data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id=False)
+                msg = can.Message(arbitration_id=0x108,
+                                data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id=False)
 
-                    if self.bus is not None:
-                        try:
-                            if(self.bus is not None):
-                                self.bus.send(msg)
-                        except can.CanError:
-                            if counter == 0:
-                                print("Needle sweep message NOT sent.")
+                if self.bus is not None and counter % 10 == 0: #reduce loops to empathize with buffer
+                    try:
+                        if(self.bus is not None):
+                            self.bus.send(msg)
+                            print(msg)
+                    except can.CanError:
+                        if counter == 0:
+                            print("Needle sweep message NOT sent.")
                 tour += 1
 
 

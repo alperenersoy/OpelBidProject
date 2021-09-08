@@ -15,7 +15,9 @@ Window {
     
     property double airTemp: -100
     property bool isCanOnline: false
-    property bool isCarStarted: false
+    property bool isEngineRunning: false
+    property bool isIgnitionOn: false
+    property bool isCruiseControlActive: false
     property bool isHeadLightsOn: false
 
     Rectangle {
@@ -36,12 +38,12 @@ Window {
             orientation: Qt.Horizontal
 
             Component.onCompleted: {
-            var currentTopBarSetting = backend.getSetting("currentTopBar")
-            if(currentTopBarSetting)
-                toolbar_swipe.setCurrentIndex(parseInt(currentTopBarSetting))
+                var currentTopBarSetting = backend.getSetting("currentTopBar")
+                if(currentTopBarSetting)
+                    toolbar_swipe.setCurrentIndex(parseInt(currentTopBarSetting))
             }
 
-            onCurrentIndexChanged:{ 
+            onCurrentIndexChanged:{
                 backend.setSetting('currentTopBar', toolbar_swipe.currentIndex)
             }
 
@@ -449,19 +451,6 @@ Window {
         }
     }
 
-    Timer{
-        id: emitValuesTimer
-        interval: 30
-        repeat: true
-        running: true
-
-        onTriggered:
-        {
-            backend.emitValues()
-        }
-    }
-
-
     Timer {
         id: timer
         interval: 750
@@ -510,7 +499,7 @@ Window {
     {
         target: backend
 
-        onSpeed:
+        onSpeed: //new syntax didn't work on raspberry pi and i had to solve like this.
         {
             var speed = backend.getCurrentSpeed()
             if(speed != null)
@@ -559,6 +548,27 @@ Window {
                 swipeView.setCurrentIndex(swipeView.currentIndex-1)
         }
 
+        onIsCanOnline:
+        {
+            var isCanOnline = backend.getCurrentIsCanOnline()
+            if(!isCanOnline){
+                //can bus can not be initialized. show error?
+                errorMessage.text = "Can başlatılamadı!"
+                errorBar.visible = true
+            }
+            else
+            {
+                errorBar.text = ""
+                errorBar.visible = false
+            }
+        }
+
+        onIsCruiseControlActive:
+        {
+            var isCruiseControlActive = backend.getCurrentIsCruiseControlActive()
+            stackViewGauges.currentItem.isCruiseControlActive = isCruiseControlActive
+        }
+
         /*function onInstantConsumption(instantConsumption)
         {
             stackViewFuel.currentItem.instantConsumption = instantConsumption
@@ -571,6 +581,48 @@ Window {
 
     }
 
+    Rectangle {
+        id: errorBar
+        y: 232
+        height: 50
+        visible: false
+        color: "#00000000"
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 0
+        anchors.leftMargin: 0
+        anchors.bottomMargin: 0
+
+        Text {
+            id: errorMessage
+            x: 700
+            y: 0
+            color: "#ffffff"
+            text: "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\np, li { white-space: pre-wrap; }\n</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Error Message</p></body></html>"
+            anchors.verticalCenter: parent.verticalCenter
+            font.pixelSize: 15
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            fontSizeMode: Text.FixedSize
+            textFormat: Text.RichText
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Image {
+                id: image
+                width: 36
+                height: 36
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: parent.left
+                anchors.top: parent.top
+                source: "qml/images/warning.png"
+                anchors.leftMargin: -50
+                anchors.topMargin: -10
+                fillMode: Image.PreserveAspectFit
+            }
+        }
+
+    }
 }
 
 

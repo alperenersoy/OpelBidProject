@@ -49,31 +49,26 @@ Item {
     }
     Connections {
         target: gaugesPage
-	onSpeedChanged: {
-            stackViewGauge1.currentItem.speed = speed
-            stackViewGauge2.currentItem.speed = speed
-            stackViewGauge3.currentItem.speed = speed
-	}
-       function onSpeedChanged() {
+        onSpeedChanged: {
             stackViewGauge1.currentItem.speed = speed
             stackViewGauge2.currentItem.speed = speed
             stackViewGauge3.currentItem.speed = speed
         }
-        function onRpmChanged() {
+        onRpmChanged: {
             stackViewGauge1.currentItem.rpm = rpm
             stackViewGauge2.currentItem.rpm = rpm
             stackViewGauge3.currentItem.rpm = rpm
         }
-        function onEngineTempChanged() {
+        onEngineTempChanged: {
             stackViewGauge1.currentItem.engineTemp = engineTemp
             stackViewGauge2.currentItem.engineTemp = engineTemp
             stackViewGauge3.currentItem.engineTemp = engineTemp
         }
-        function onisCanOnlineChanged() {
+        /*onisCanOnlineChanged: {
             stackViewGauge1.currentItem.isCanOnline = isCanOnline
             stackViewGauge2.currentItem.isCanOnline = isCanOnline
             stackViewGauge3.currentItem.isCanOnline = isCanOnline
-        }
+        }*/
     }
 
 

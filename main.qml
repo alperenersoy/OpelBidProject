@@ -509,41 +509,57 @@ Window {
     Connections
     {
         target: backend
-	onSpeed: stackViewGauges.currentItem.speed = parseFloat(backend.getCurrentSpeed())
 
-        onSpeed: console.log()
-
-        function onSpeed(speed)
+        onSpeed:
         {
-	    console.log(speed)
-            if(speed)
+            var speed = backend.getCurrentSpeed()
+            if(speed != null)
                 stackViewGauges.currentItem.speed = speed
         }
 
-        function onRpm(rpm)
+        onRpm:
         {
-            if(rpm)
+            var rpm  = backend.getCurrentRpm()
+            if(rpm != null)
                 stackViewGauges.currentItem.rpm = rpm
         }
 
-        function onEngineTemp(engineTemp)
+        onEngineTemp:
         {
-            if(engineTemp)
+            var engineTemp = backend.getCurrentEngineTemp()
+            if(engineTemp != null)
                 stackViewGauges.currentItem.engineTemp = engineTemp
         }
 
-        function onAirTemp(temp)
+        onAirTemp:
         {
-            stackViewHome.currentItem.temp = temp
-            airTemp = temp
+            var temp = backend.getCurrentAirTemp()
+            if(temp != null)
+            {
+                stackViewHome.currentItem.temp = temp
+                airTemp = temp
+            }
         }
 
-        function onFuelPercentage(fuelPercentage)
+        onFuelPercentage:
         {
-            stackViewFuel.currentItem.fuelPercentage = fuelPercentage
+            var fuelPercentage = backend.getCurrentFuelPercentage()
+            if(fuelPercentage != null)
+                stackViewFuel.currentItem.fuelPercentage = fuelPercentage
         }
 
-        function onInstantConsumption(instantConsumption)
+        
+
+        onTriggeredControl:
+        {
+            var triggeredControl = backend.getTriggeredControl()
+            if(triggeredControl == 'LEFT_KNOB_UP'){
+                swipeView.setCurrentIndex(swipeView.currentIndex+1)}
+            else if(triggeredControl == 'LEFT_KNOB_DOWN')
+                swipeView.setCurrentIndex(swipeView.currentIndex-1)
+        }
+
+        /*function onInstantConsumption(instantConsumption)
         {
             stackViewFuel.currentItem.instantConsumption = instantConsumption
         }
@@ -551,16 +567,7 @@ Window {
         function onEstRange(estRange)
         {
             stackViewFuel.currentItem.estRange = estRange
-        }
-
-        function onTriggeredControl(triggeredControl)
-        {
-            if(triggeredControl == 'LEFT_KNOB_UP'){
-		console.log("up")
-                swipeView.setCurrentIndex(swipeView.currentIndex+1)}
-            else if(triggeredControl == 'LEFT_KNOB_DOWN')
-                swipeView.setCurrentIndex(swipeView.currentIndex-1)
-        }
+        }*/
 
     }
 

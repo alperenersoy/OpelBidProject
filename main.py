@@ -23,32 +23,72 @@ class MainWindow(QObject):
     settings = EasySettings("settings.conf")
 
     currentIgnitionStatus = ""
-    currentSpeed = 100
     headLightLoop = None
     hazardLightOn = False
 
     isCanOnline = Signal(bool)
+    currentIsCanOnline = False
     speed = Signal(float)
+    currentSpeed = None
     rpm = Signal(int)
+    currentRpm = None
     engineTemp = Signal(int)
+    currentEngineTemp = None
     airTemp = Signal(float)
+    currentAirTemp = None
     fuelPercentage = Signal(float)
-    estRange = Signal(float)
-    averageConsumption = Signal(str)
-    instantConsumption = Signal(float)
+    currentFuelPercentage = None
     isIgnitionOn = Signal(bool)
+    currentIsIgnitionOn = None
     isEngineRunning = Signal(bool)
+    currentIsEngineRunnging = None
     isCruiseControlActive = Signal(bool)
+    currentIsCruiseControlActive = None
     triggeredControl = Signal(str)
+    currentTriggeredControl= None
 
     @Slot(result=float)
     def getCurrentSpeed(self):
         return self.currentSpeed
 
+    @Slot(result=int)
+    def getCurrentRpm(self):
+        return self.currentRpm
+    
+    @Slot(result=int)
+    def getCurrentEngineTemp(self):
+        return self.currentEngineTemp
+
+    @Slot(result=float)
+    def getCurrentAirTemp(self):
+        return self.currentAirTemp
+
+    @Slot(result=bool)
+    def getCurrentIsIgnitionOn(self):
+        return self.currentIsIgnitionOn
+    
+    @Slot(result=bool)
+    def getCurrentIsEngineRunnging(self):
+        return self.currentIsEngineRunnging
+
+    @Slot(result=bool)
+    def getCurrentIsCruiseControlActive(self):
+        return self.currentIsCruiseControlActive
+
+    @Slot(result=str)
+    def getCurrentTriggeredControl(self):
+        return self.triggeredControl
+
     @Slot()
     def emitValues(self):
         self.currentSpeed = randrange(150)
+        self.currentRpm = randrange(60)
+        self.currentEngineTemp = randrange(130)
+        self.currentAirTemp = randrange(40)
         self.speed.emit(self.currentSpeed)
+        self.rpm.emit(self.currentRpm)
+        self.engineTemp.emit(self.currentEngineTemp)
+        self.airTemp.emit(self.currentEngineTemp)
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -200,7 +240,6 @@ class MainWindow(QObject):
         triggeredControls = cardata.humanizeSWControls(data)
         for triggeredControl in triggeredControls:
             self.triggeredControl.emit(triggeredControl)
-        print(triggeredControls)
 
     def needleSweep(self):
         counter = 0

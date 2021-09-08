@@ -25,7 +25,7 @@ class MainWindow(QObject):
     
     currentIgnitionStatus = ""
     headLightLoop = None
-
+    data_lock = threading.Lock()
     isCanOnline = Signal(bool)
     speed = Signal(float)
     rpm = Signal(int)
@@ -103,6 +103,7 @@ class MainWindow(QObject):
     def startCanLoop(self):
         self.thread = threading.Thread(target=self.canLoop, daemon=True)
         self.thread.start()
+        
 
     def checkCanMessage(self, id, data):
         if(id in cardata.canMessages and cardata.canMessages[id] == 'MOTION'):
@@ -159,12 +160,13 @@ class MainWindow(QObject):
 
     def updateMotionData(self, data):
         motionData = cardata.humanizeMotionData(data)
-        self.speed.emit(float(motionData["speed"]))
+        with self.data_lock
+            self.speed.emit(float(motionData["speed"]))
         self.rpm.emit(int(motionData["rpm"]/100))
         self.isEngineRunning.emit(motionData["isEngineRunning"])
         self.isIgnitionOn.emit(motionData["isIgnitionOn"])
-        print('ignitionOn:   ' + str(motionData["isIgnitionOn"]))
-        print('engineRunning:   ' + str(motionData["isEngineRunning"]))
+        print('speed:   ' + str(motionData["speed"]))
+        print('rpm:   ' + str(motionData["rpm"]))
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)

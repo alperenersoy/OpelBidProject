@@ -81,6 +81,7 @@ class MainWindow(QObject):
         print("Can bus başlatılamıyor.")
 
     def canLoop(self):
+        self.speed.emit(randrange(150))
         if self.bus is not None:
             self.isCanOnline.emit(True)
             while True:
@@ -242,4 +243,4 @@ if __name__ == "__main__":
     main.startCanLoop()
     if not engine.rootObjects():
         sys.exit(-1)
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

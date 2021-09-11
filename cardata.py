@@ -18,7 +18,9 @@ canMessages = {
 }
 
 # constants
-HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x260,data=[0x1F, 0x43, 0x7F], is_extended_id = False)
+HAZARD_LIGHTS_ON2 = can.Message(arbitration_id=0x260,data=[0x1F, 0x43, 0x7F], is_extended_id = False)
+HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x305,data=[0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80,0x00], is_extended_id = False)
+HAZARD_LIGHTS_OFF2 = can.Message(arbitration_id=0x305,data=[0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80,0x00], is_extended_id = False)
 HAZARD_LIGHTS_OFF = can.Message(arbitration_id=0x260,
                                data=[0x00, 0x00, 0x00], is_extended_id = False)
 SIDE_LIGHTS_ON = can.Message(arbitration_id=0x305,
@@ -135,9 +137,9 @@ def humanizeDoorOpenData(data):
     
 def humanizeGearData(data):
     data = convertByteArrayToList(data)
-    if data[0] == "12":
+    if data[0] == "12" or data[0] == "16":
         return "REVERSE"
-    elif data[0] == "02":
+    elif data[0] == "02" or data[2] =="06":
         return "NOT_REVERSE"
 
 def humanizeHandBrakeData(data):

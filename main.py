@@ -29,23 +29,23 @@ class MainWindow(QObject):
     isCanOnline = Signal(bool)
     currentIsCanOnline = False
     speed = Signal(float)
-    currentSpeed = None
+    currentSpeed = 0
     rpm = Signal(int)
-    currentRpm = None
+    currentRpm = 0
     engineTemp = Signal(int)
-    currentEngineTemp = None
+    currentEngineTemp = 0
     airTemp = Signal(float)
-    currentAirTemp = None
+    currentAirTemp = 0
     fuelPercentage = Signal(float)
-    currentFuelPercentage = None
+    currentFuelPercentage = 0
     isIgnitionOn = Signal(bool)
-    currentIsIgnitionOn = None
+    currentIsIgnitionOn = False
     isEngineRunning = Signal(bool)
     currentIsEngineRunning = False
     isCruiseControlActive = Signal(bool)
     currentIsCruiseControlActive = False
     triggeredControl = Signal(str)
-    currentTriggeredControl= None
+    currentTriggeredControl= ""
 
     @Slot(result=float)
     def getCurrentSpeed(self):
@@ -82,6 +82,12 @@ class MainWindow(QObject):
     @Slot(result=bool)
     def getCurrentIsCanOnline(self):
         return self.currentIsCanOnline
+    @Slot(result=float)
+    def getCurrentFuelPercentage(self):
+        return self.currentFuelPercentage
+    @Slot(result=str)
+    def getTriggeredControl(self):
+        return self.currentTriggeredControl
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -186,6 +192,7 @@ class MainWindow(QObject):
                 try:
                     if(self.bus is not None and self.hazardLightOn == False):
                         self.bus.send(cardata.HAZARD_LIGHTS_ON)
+                        self.bus.send(cardata.HAZARD_LIGHTS_ON2)
                         self.hazardLightOn = True
                         print("Hazard lights on message sent.")
                 except can.CanError:
@@ -194,6 +201,7 @@ class MainWindow(QObject):
                 try:
                     if(self.bus is not None and self.hazardLightOn == True):
                         self.bus.send(cardata.HAZARD_LIGHTS_OFF)
+                        self.bus.send(cardata.HAZARD_LIGHTS_OFF2)
                         self.hazardLightOn = False
                         print("Hazard lights off message sent.")
                 except can.CanError:
@@ -223,13 +231,13 @@ class MainWindow(QObject):
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
         self.currentEngineTemp = int(engineData["engineTemp"])
-        self.isCruiseControlActive = engineData["isCruiseControlActive"]
+        self.currentIsCruiseControlActive = engineData["isCruiseControlActive"]
         self.engineTemp.emit(self.currentEngineTemp)
-        self.isCruiseControlActive.emit(self.currentEngineTemp)
+        self.isCruiseControlActive.emit(self.currentIsCruiseControlActive)
 
     def updateAirTemp(self, data):
         airTemp = cardata.humanizeAirTemp(data)
-        self.currentAirTemp(float(airTemp))
+        self.currentAirTemp=float(airTemp)
         self.airTemp.emit(self.currentAirTemp)
 
     def updateFuelLevel(self, data):
@@ -282,7 +290,6 @@ class MainWindow(QObject):
                     try:
                         if(self.bus is not None):
                             self.bus.send(msg)
-                            print(msg)
                     except can.CanError:
                         if counter == 0:
                             print("Needle sweep message NOT sent.")

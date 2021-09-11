@@ -271,7 +271,7 @@ Item {
                 id: kilometer
                 y: 114
                 height: 160
-                color: isCruiseControlActive ? "#00ff00" : "#ffffff"
+                color: isCruiseControlActive ? "#00ff00" : "#ededed"
                 text: speed
                 font.family: fontLoaderBold.name
                 anchors.verticalCenter: parent.verticalCenter
@@ -289,7 +289,7 @@ Item {
                     id: kms_text
                     x: 384
                     y: 158
-                    color: "#ffffff"
+                    color: "#ededed"
                     text: qsTr("km/s")
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: -60

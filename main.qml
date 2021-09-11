@@ -11,7 +11,7 @@ Window {
     color: "#000000"
     property alias dtc_button: dtc_button
     title: qsTr("Opel BID")
-    //visibility: 'FullScreen'
+    visibility: 'FullScreen'
     
     property double airTemp: -100
     property bool isCanOnline: false
@@ -558,7 +558,7 @@ Window {
             }
             else
             {
-                errorBar.text = ""
+                errorMessage.text = ""
                 errorBar.visible = false
             }
         }

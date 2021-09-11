@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import sys
 import time
+import datetime
 import math
 import can
 import cardata
@@ -26,6 +27,13 @@ class MainWindow(QObject):
     headLightLoop = None
     hazardLightOn = False
 
+    currentFuelLevel = None
+    engineStartTime = 0
+    distanceTraveled = 0
+    fuelLevelOnStart = None
+    # first element: count of samples, second element: current mean
+    averageSpeed = [0, 0]
+
     isCanOnline = Signal(bool)
     currentIsCanOnline = False
     speed = Signal(float)
@@ -45,7 +53,7 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     currentIsCruiseControlActive = False
     triggeredControl = Signal(str)
-    currentTriggeredControl= ""
+    currentTriggeredControl = ""
 
     @Slot(result=float)
     def getCurrentSpeed(self):
@@ -54,7 +62,7 @@ class MainWindow(QObject):
     @Slot(result=int)
     def getCurrentRpm(self):
         return self.currentRpm
-    
+
     @Slot(result=int)
     def getCurrentEngineTemp(self):
         return self.currentEngineTemp
@@ -66,7 +74,7 @@ class MainWindow(QObject):
     @Slot(result=bool)
     def getCurrentIsIgnitionOn(self):
         return self.currentIsIgnitionOn
-    
+
     @Slot(result=bool)
     def getcurrentIsEngineRunning(self):
         return self.currentIsEngineRunning
@@ -82,12 +90,27 @@ class MainWindow(QObject):
     @Slot(result=bool)
     def getCurrentIsCanOnline(self):
         return self.currentIsCanOnline
+
     @Slot(result=float)
     def getCurrentFuelPercentage(self):
         return self.currentFuelPercentage
+
     @Slot(result=str)
     def getTriggeredControl(self):
         return self.currentTriggeredControl
+    
+    @Slot(result=dict)
+    def getCurrentTripData(self):
+        if(self.currentIsEngineRunning):
+            currentTripData = {
+                "elapsedTime" : str(datetime.timedelta(seconds=time.time() - self.engineStartTime)),
+                "fuelConsumption": self.fuelLevelOnStart - self.currentFuelLevel,
+                "distanceTraveled" : self.distanceTraveled,
+                "averageSpeed": self.averageSpeed[1]
+            }
+            return currentTripData
+        else:
+            return {}
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -156,7 +179,6 @@ class MainWindow(QObject):
         self.thread = threading.Thread(target=self.canLoop, daemon=True)
         self.thread.start()
 
-
     def checkCanMessage(self, id, data):
         if(id in cardata.canMessages and cardata.canMessages[id] == 'MOTION'):
             self.updateMotionData(data)
@@ -174,6 +196,8 @@ class MainWindow(QObject):
             self.updateGearStatus(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'KEY_BUTTONS'):
             self.triggerKeyButtons(data)
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'DISTANCE_TRAVELED'):
+            self.updateDistanceTraveled(data)
 
     def triggerKeyButtons(self, data):
         if(self.settings.has_option("closeWindowOnLock") and bool(self.settings.get("closeWindowOnLock")) == True):
@@ -207,7 +231,6 @@ class MainWindow(QObject):
                 except can.CanError:
                     print("Hazard lights off message NOT sent.")
 
-
     def updateIgnitionStatus(self, data):
         ignitionStatus = cardata.humanizeIgnitionData(data)
         if(self.currentIgnitionStatus == "ACCESSORY" and ignitionStatus == "ON"):
@@ -219,6 +242,8 @@ class MainWindow(QObject):
 
     def updateMotionData(self, data):
         motionData = cardata.humanizeMotionData(data)
+        self.triggerEngineStatus(
+            motionData["isEngineRunning"], self.currentIsEngineRunning)
         self.currentSpeed = float(motionData["speed"])
         self.currentRpm = int(motionData["rpm"]/100)
         self.currentIsEngineRunning = motionData["isEngineRunning"]
@@ -227,6 +252,11 @@ class MainWindow(QObject):
         self.rpm.emit(self.currentRpm)
         self.isEngineRunning.emit(self.currentIsEngineRunning)
         self.isIgnitionOn.emit(self.currentIsIgnitionOn)
+        newSampleCount = self.averageSpeed[0] + 1
+        currentAverageSpeedTotal = self.averageSpeed[0] * self.averageSpeed[1]
+        newAverageSpeedTotal = currentAverageSpeedTotal + self.currentSpeed
+        self.averageSpeed = [newSampleCount,
+                             newAverageSpeedTotal / newSampleCount]
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
@@ -237,19 +267,37 @@ class MainWindow(QObject):
 
     def updateAirTemp(self, data):
         airTemp = cardata.humanizeAirTemp(data)
-        self.currentAirTemp=float(airTemp)
+        self.currentAirTemp = float(airTemp)
         self.airTemp.emit(self.currentAirTemp)
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)
-        self.currentFuelPercentage = (float(fuelLevel) * 100) / cardata.fuelCapacity
+        self.currentFuelLevel = fuelLevel
+        self.currentFuelPercentage = (
+            float(fuelLevel) * 100) / cardata.fuelCapacity
         self.fuelPercentage.emit(self.currentFuelPercentage)
+
+    def updateDistanceTraveled(self, data):
+        distanceTraveled = cardata.humanizeDistanceData(data)
+        self.distanceTraveled = distanceTraveled
 
     def triggerSWControl(self, data):
         triggeredControls = cardata.humanizeSWControls(data)
         for triggeredControl in triggeredControls:
             self.currentTriggeredControl = triggeredControl
             self.triggeredControl.emit(self.currentTriggeredControl)
+
+    def triggerEngineStatus(self, newIsEngineRunning, currentIsEngineRunning):
+        if(currentIsEngineRunning == False and newIsEngineRunning == True):
+            # engine started
+            self.engineStartTime = time.time()
+            self.fuelLevelOnStart = self.currentFuelLevel
+            self.distanceTraveled = 0
+            self.averageSpeed = [0, 0]
+        elif(currentIsEngineRunning == True and newIsEngineRunning == False):
+            # engine stopped
+            print()
+
     @Slot()
     def needleSweep(self):
         print("on")
@@ -268,7 +316,8 @@ class MainWindow(QObject):
                     if counter < 260:
                         speed1 = int(math.floor(counter/256))
                         speed2 = int(counter % 256)
-                        rpm1 = int(math.floor(counter*100/speedRmpRate/256)) # multiply rpm by 100 to calculate exact 4 digit rpm
+                        # multiply rpm by 100 to calculate exact 4 digit rpm
+                        rpm1 = int(math.floor(counter*100/speedRmpRate/256))
                         rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
                         counter += 1
                     else:
@@ -284,9 +333,9 @@ class MainWindow(QObject):
                         break
 
                 msg = can.Message(arbitration_id=0x108,
-                                data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id=False)
+                                  data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id=False)
 
-                if self.bus is not None and counter % 10 == 0: #reduce loops to empathize with buffer
+                if self.bus is not None and counter % 10 == 0:  # reduce loops to empathize with buffer
                     try:
                         if(self.bus is not None):
                             self.bus.send(msg)

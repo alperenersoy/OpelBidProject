@@ -14,7 +14,8 @@ canMessages = {
     0X350:  "GEAR_STATUS",  # reverse or not
     0X370:  "HANDBRAKE_STATUS",
     0x170:  "IGNITION_STATUS",
-    0X160:  "KEY_BUTTONS"
+    0x160:  "KEY_BUTTONS",
+    0x110:  "DISTANCE_TRAVELED"
 }
 
 # constants
@@ -159,6 +160,16 @@ def humanizeIgnitionData(data):
         return "ON"
     elif data[0] == "76":
         return "START"
+
+def humanizeDistanceData(data):
+    data = convertByteArrayToList(data)
+    frontLeftWheelDistanceHex = data[1] + data[2]
+    frontRightWheelDistanceHex = data[3] + data[4]
+    frontLeftWheelDistance = int(frontLeftWheelDistanceHex, 16) * 1.5748 # as meters
+    frontRightWheelDistance = int(frontRightWheelDistanceHex, 16) * 1.5748 # as meters
+    meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2 # mean of distances in case of getting different values
+    distanceAsKilometer = round(meanDistance / 1000 , 2)
+    return distanceAsKilometer
 
 def convertByteArrayToList(bytearr):  # is this really required??
     hexList = list(bytearr.hex())

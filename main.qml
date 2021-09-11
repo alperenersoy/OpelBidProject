@@ -11,7 +11,7 @@ Window {
     color: "#000000"
     property alias dtc_button: dtc_button
     title: qsTr("Opel BID")
-    visibility: 'FullScreen'
+    visibility: Screen.height === 480 ? 'FullScreen' : 'Windowed'  //for 800x480 raspberry pi screen only
     
     property double airTemp: -100
     property bool isCanOnline: false
@@ -305,9 +305,9 @@ Window {
                     Text {
                         id: temp1
                         y: 13
-                        visible: true
+                        visible: airTemp != -100
                         color: "#ffffff"
-                        text: airTemp
+                        text: airTemp == -100 ? '--' : airTemp
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
                         font.pixelSize: 24
@@ -321,6 +321,7 @@ Window {
                             anchors.right: parent.right
                             font.pixelSize: 24
                             anchors.rightMargin: -25
+                            visible: airTemp != -100
                         }
                         anchors.rightMargin: 45
                     }
@@ -378,6 +379,11 @@ Window {
 
         Item {
             //info
+            StackView {
+                id: stackViewTrips
+                anchors.fill: parent
+                initialItem: "qml/pages/tripsPage.qml"
+            }
         }
 
         Item {
@@ -465,6 +471,17 @@ Window {
             clock.text = nowTime;
             stackViewHome.currentItem.clock = nowTime;
             stackViewHome.currentItem.date = nowDate;
+
+            var currentTripData = backend.getCurrentTripData()
+            if(currentTripData.elapsedTime)
+            {
+                stackViewTrips.currentElapsedTime = currentTripData.elapsedTime
+                stackViewTrips.currentFuelConsumption = currentTripData.fuelConsumption
+                stackViewTrips.currentDistanceTraveled = currentTripData.distanceTraveled
+                stackViewTrips.currentAverageSpeed = currentTripData.averageSpeed
+            }
+
+
 
             //if(backend.getSetting("autoHeadLights"))
             if(false)

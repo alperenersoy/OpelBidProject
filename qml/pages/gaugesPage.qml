@@ -21,7 +21,7 @@ Item {
             StackView {
                 id: stackViewGauge1
                 anchors.fill: parent
-                initialItem: "gauges/gaugeOne.qml"
+                initialItem: "gauges/gaugeThree.qml"
             }
         }
 
@@ -36,7 +36,7 @@ Item {
             StackView {
                 id: stackViewGauge3
                 anchors.fill: parent
-                initialItem: "gauges/gaugeThree.qml"
+                initialItem: "gauges/gaugeOne.qml"
             }
         }
 

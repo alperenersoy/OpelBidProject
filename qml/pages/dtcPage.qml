@@ -30,6 +30,10 @@ Item {
         anchors.fill: parent
         anchors.topMargin: 110
         model : ListModel{
+            ListElement{
+                errorCode:"Her şey yolunda!"
+                details:"Hata bulunamadı."
+            }
         }
 
         delegate: Row {

@@ -283,7 +283,7 @@ class MainWindow(QObject):
                                 newAverageSpeedTotal / newSampleCount]
         if(self.currentIsIgnitionOn == False and self.currentIsEngineRunning == False and self.currentIgnitionStatus != "START"):
             self.shutDown()
-        if(self.isShutDownSet and (self.currentIsIgnitionOn == True or self.currentIsEngineRunning == False or self.currentIgnitionStatus != "ON" or self.currentIgnitionStatus != "START")):
+        if(self.isShutDownSet and (self.currentIsIgnitionOn == True or self.currentIsEngineRunning == True or self.currentIgnitionStatus == "ON" or self.currentIgnitionStatus == "START")):
             self.cancelShutDown()
 
 

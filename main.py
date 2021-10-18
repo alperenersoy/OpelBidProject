@@ -259,11 +259,7 @@ class MainWindow(QObject):
 
     def updateIgnitionStatus(self, data):
         ignitionStatus = cardata.humanizeIgnitionData(data)
-        print(ignitionStatus)
-        if(self.currentIgnitionStatus == "ON" and (ignitionStatus == "ACCESSORY" or ignitionStatus == "LOCK")):
-            self.shutDown()
-
-        if(self.currentIgnitionStatus == "" or ignitionStatus != self.currentIgnitionStatus):
+        if((self.currentIgnitionStatus == "" or ignitionStatus != self.currentIgnitionStatus) and ignitionStatus is not None):
             self.currentIgnitionStatus = ignitionStatus
 
     def updateMotionData(self, data):
@@ -284,6 +280,9 @@ class MainWindow(QObject):
             newAverageSpeedTotal = currentAverageSpeedTotal + self.currentSpeed
             self.averageSpeed = [newSampleCount,
                                 newAverageSpeedTotal / newSampleCount]
+        print(self.currentIsEngineRunning)
+        print(self.isIgnitionOn)
+
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)

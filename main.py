@@ -285,7 +285,7 @@ class MainWindow(QObject):
         print(self.currentIsEngineRunning)
         print(self.currentIgnitionStatus) 
         
-        if(self.isShutDownSet == False and self.currentIsIgnitionOn == False and self.currentIsEngineRunning == False and self.currentIgnitionStatus != "START"):
+        if(self.isShutDownSet == False and self.currentIsIgnitionOn == False and self.currentIsEngineRunning == False and self.currentIgnitionStatus != "START" and self.currentIgnitionStatus != "ON"):
             self.shutDown()
         if(self.isShutDownSet and (self.currentIsIgnitionOn == True or self.currentIsEngineRunning == True or self.currentIgnitionStatus == "ON" or self.currentIgnitionStatus == "START")):
             self.cancelShutDown()

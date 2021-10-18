@@ -9,10 +9,9 @@ Window {
     height: 480
     visible: true
     color: "#000000"
-    property alias dtc_button: dtc_button
     title: qsTr("Opel BID")
     visibility: Screen.height === 480 ? 'FullScreen' : 'Windowed'  //for 800x480 raspberry pi screen only
-    
+
     property double airTemp: -100
     property bool isCanOnline: false
     property bool isEngineRunning: false
@@ -66,13 +65,13 @@ Window {
                         text: qsTr("00:39")
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        font.pixelSize: 24
+                        font.pixelSize: 36
                         anchors.leftMargin: 20
                     }
 
                     Rectangle {
                         id: topbar_container
-                        width: 310
+                        width: 260
                         height: 50
                         color: "#00000000"
                         border.width: 0
@@ -200,34 +199,6 @@ Window {
                         }
 
                         Button {
-                            id: dtc_button
-                            x: 260
-                            y: 5
-                            width: 40
-                            height: 40
-                            text: qsTr("Button")
-                            anchors.left: parent.left
-                            display: AbstractButton.IconOnly
-                            flat: true
-                            onClicked: swipeView.setCurrentIndex(4)
-                            Image {
-                                anchors.fill: parent
-                                source: "qml/images/dtc.png"
-                                fillMode: Image.Pad
-                                z: 1
-                            }
-
-                            Rectangle {
-                                id: bg_4
-                                color: "#00000000"
-                                radius: 0
-                                border.color: "#00000000"
-                                anchors.fill: parent
-                            }
-                            anchors.leftMargin: 210
-                        }
-
-                        Button {
                             id: settings_button
                             x: 2160
                             y: 5
@@ -235,10 +206,10 @@ Window {
                             height: 40
                             text: qsTr("Button")
                             anchors.left: parent.left
-                            anchors.leftMargin: 260
+                            anchors.leftMargin: 210
                             display: AbstractButton.IconOnly
                             flat: true
-                            onClicked: swipeView.setCurrentIndex(5)
+                            onClicked: swipeView.setCurrentIndex(4)
                             Image {
                                 anchors.fill: parent
                                 source: "qml/images/settings.png"
@@ -266,7 +237,7 @@ Window {
                         visible: airTemp != -100
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        font.pixelSize: 24
+                        font.pixelSize: 36
                         anchors.rightMargin: 45
 
                         Text {
@@ -298,7 +269,7 @@ Window {
                         text: qsTr("00:39")
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        font.pixelSize: 24
+                        font.pixelSize: 36
                         anchors.leftMargin: 20
                     }
 
@@ -310,7 +281,7 @@ Window {
                         text: airTemp == -100 ? '--' : airTemp
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
-                        font.pixelSize: 24
+                        font.pixelSize: 36
                         Text {
                             id: degree1
                             x: 0
@@ -319,7 +290,7 @@ Window {
                             text: qsTr("°C")
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.right: parent.right
-                            font.pixelSize: 24
+                            font.pixelSize: 36
                             anchors.rightMargin: -25
                             visible: airTemp != -100
                         }
@@ -363,6 +334,7 @@ Window {
             StackView {
                 id: stackViewGauges
                 anchors.fill: parent
+                enabled: true
                 initialItem: "qml/pages/gaugesPage.qml"
             }
 
@@ -373,6 +345,7 @@ Window {
             StackView {
                 id: stackViewFuel
                 anchors.fill: parent
+                enabled: true
                 initialItem: "qml/pages/fuelPage.qml"
             }
         }
@@ -382,18 +355,9 @@ Window {
             StackView {
                 id: stackViewTrips
                 anchors.fill: parent
+                enabled: true
                 initialItem: "qml/pages/tripsPage.qml"
             }
-        }
-
-        Item {
-            //dtc
-            StackView {
-                id: stackViewDtc
-                anchors.fill: parent
-                initialItem: "qml/pages/dtcPage.qml"
-            }
-
         }
 
         Item {
@@ -405,7 +369,6 @@ Window {
                 bg_1.color='#00000000';
                 bg_2.color='#00000000';
                 bg_3.color='#00000000';
-                bg_4.color='#00000000';
                 bg_5.color='#00000000';
                 swipeView.z = 5;
             }
@@ -414,7 +377,6 @@ Window {
                 bg_0.color='#00000000';
                 bg_2.color='#00000000';
                 bg_3.color='#00000000';
-                bg_4.color='#00000000';
                 bg_5.color='#00000000';
                 swipeView.z = 0;
             }
@@ -423,7 +385,6 @@ Window {
                 bg_0.color='#00000000';
                 bg_1.color='#00000000';
                 bg_3.color='#00000000';
-                bg_4.color='#00000000';
                 bg_5.color='#00000000';
                 swipeView.z = 0;
             }
@@ -432,26 +393,16 @@ Window {
                 bg_0.color='#00000000';
                 bg_1.color='#00000000';
                 bg_2.color='#00000000';
-                bg_4.color='#00000000';
                 bg_5.color='#00000000';
                 swipeView.z = 0;
             }
             else if(currentIndex==4){
-                bg_4.color = '#d9a600';
-                bg_0.color='#00000000';
-                bg_1.color='#00000000';
-                bg_2.color='#00000000';
-                bg_3.color='#00000000';
-                bg_5.color='#00000000';
-                swipeView.z = 0;
-            }
-            else if(currentIndex==5){
                 bg_5.color = '#d9a600';
                 bg_0.color='#00000000';
                 bg_1.color='#00000000';
                 bg_2.color='#00000000';
                 bg_3.color='#00000000';
-                bg_4.color='#00000000';
+                
                 swipeView.z = 0;
             }
         }
@@ -471,17 +422,19 @@ Window {
             clock.text = nowTime;
             stackViewHome.currentItem.clock = nowTime;
             stackViewHome.currentItem.date = nowDate;
+            var currentTripData = JSON.parse(backend.getCurrentTripData())
 
-            var currentTripData = backend.getCurrentTripData()
             if(currentTripData.elapsedTime)
-            {
-                stackViewTrips.currentElapsedTime = currentTripData.elapsedTime
-                stackViewTrips.currentFuelConsumption = currentTripData.fuelConsumption
-                stackViewTrips.currentDistanceTraveled = currentTripData.distanceTraveled
-                stackViewTrips.currentAverageSpeed = currentTripData.averageSpeed
-            }
+                stackViewTrips.currentItem.currentElapsedTime = currentTripData.elapsedTime
 
+            if(currentTripData.fuelConsumption)
+                stackViewTrips.currentItem.currentFuelConsumption = currentTripData.fuelConsumption
 
+            if(currentTripData.distanceTraveled)
+                stackViewTrips.currentItem.currentDistanceTraveled = currentTripData.distanceTraveled
+
+            if(currentTripData.averageSpeed)
+                stackViewTrips.currentItem.currentAverageSpeed = currentTripData.averageSpeed
 
             //if(backend.getSetting("autoHeadLights"))
             if(false)
@@ -506,9 +459,44 @@ Window {
                 }
             }
 
-            /*stackViewGauges.currentItem.rpm = Math.floor(Math.random() * 60) + 1;
-            stackViewGauges.currentItem.speed = Math.floor(Math.random() * 150) + 1;
-            stackViewGauges.currentItem.engineTemp = Math.floor(Math.random() * 130) + 1;*/
+            var currentInstantConsumption = backend.getCurrentInstantConsumption();
+            if(currentInstantConsumption)
+            {
+                stackViewFuel.currentItem.instantConsumption = currentInstantConsumption;
+            }
+
+            var ignitionStatus = backend.getCurrentIgnitionStatus();
+            if(ignitionStatus)
+            {
+                if(ignitionStatus == "ON" || ignitionStatus == "START"){
+                    isIgnitionOn = true;
+                    stackViewGauges.currentItem.isIgnitionOn = true;
+                }
+                else{
+                    isIgnitionOn = false;
+                    stackViewGauges.currentItem.isIgnitionOn = false;
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        id: mouseArea
+        x: 700
+        y: 0
+        width: 100
+        height: 50
+        anchors.right: parent.right
+        anchors.rightMargin: 0
+        preventStealing: false
+        acceptedButtons: Qt.LeftButton
+        hoverEnabled: false
+        z: 50
+        onDoubleClicked: {
+            if(window.visibility == 2)
+                window.visibility = "FullScreen";
+            else if(window.visibility == 5)
+                window.visibility = "Windowed";
         }
     }
 
@@ -640,6 +628,7 @@ Window {
         }
 
     }
+
 }
 
 

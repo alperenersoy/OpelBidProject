@@ -168,8 +168,7 @@ def humanizeDistanceData(data):
     frontLeftWheelDistance = int(frontLeftWheelDistanceHex, 16) * 1.5748 # as meters
     frontRightWheelDistance = int(frontRightWheelDistanceHex, 16) * 1.5748 # as meters
     meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2 # mean of distances in case of getting different values
-    distanceAsKilometer = round(meanDistance / 1000 , 2)
-    return distanceAsKilometer
+    return meanDistance
 
 def convertByteArrayToList(bytearr):  # is this really required??
     hexList = list(bytearr.hex())

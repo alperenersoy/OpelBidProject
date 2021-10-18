@@ -1,6 +1,9 @@
-import QtQuick 2.0
+import QtQuick 2
 
 Item {
+    id:tripsPage
+    width:800
+
     property string currentElapsedTime: "" //as seconds
     property double currentFuelConsumption: 0
     property double currentDistanceTraveled:0
@@ -43,7 +46,7 @@ Item {
             Text {
                 id: timeText
                 x: 40
-                text: currentElapsedTime > 0 ? currentElapsedTime : qsTr("--")
+                text: currentElapsedTime.length > 0 ? currentElapsedTime : qsTr("--")
                 anchors.top: parent.top
                 font.pixelSize: 24
                 anchors.topMargin: 40
@@ -165,58 +168,130 @@ Item {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 0
             anchors.topMargin: 170
-            anchors.rightMargin: 0
-            anchors.leftMargin: 0
-            delegate: Item {
-                x: 5
-                width: 80
-                height: 40
-                Row {
-                    id: row1
-                    spacing: 10
-                    Rectangle {
-                        width: 40
-                        height: 40
-                        color: colorCode
+            anchors.rightMargin: 8
+            anchors.leftMargin: 8
+            visible: false
+            delegate: Row {
+                height: 80
+                anchors.left: parent.left
+                anchors.right: parent.right
+                Rectangle{
+                    color: '#ffffff'
+                    anchors.fill: parent
+                    anchors.bottomMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
+                    radius: 10
+                    Text {
+                        text: dates
+                        anchors.horizontalCenter:  parent.horizontalCenter
+                        x: 10
+                        y:7.5
+                        font.bold: true
+                    }
+                    Text {
+                        id: text1
+                        x: 0
+                        width: 175
+                        text: elapsedTime
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.bottomMargin: 0
+                        anchors.topMargin: 0
                     }
 
                     Text {
-                        text: name
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.bold: true
+                        id: text2
+                        x: 195
+                        width: 175
+                        text: distanceTraveled
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.bottomMargin: 0
+                        anchors.topMargin: 0
+                    }
+
+                    Text {
+                        id: text3
+                        x: 390
+                        width: 175
+                        text: fuelConsumption
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.bottomMargin: 0
+                        anchors.topMargin: 0
+                    }
+
+                    Text {
+                        id: text4
+                        x: 585
+                        width: 175
+                        text: averageSpeed
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.bottomMargin: 0
+                        anchors.topMargin: 0
                     }
                 }
             }
             model: ListModel {
                 ListElement {
-                    name: "Grey"
-                    colorCode: "grey"
+                    dates: "02.10.2021 13:24 - 02.10.2021 13:34"
+                    elapsedTime:"10s 10dk"
+                    distanceTraveled:"1000 KM"
+                    fuelConsumption: "58 L"
+                    averageSpeed: "999 KM"
                 }
-
                 ListElement {
-                    name: "Red"
-                    colorCode: "red"
+                    dates: "02.10.2021 13:24 - 02.10.2021 13:34"
+                    elapsedTime:"10s 10dk"
+                    distanceTraveled:"1000 KM"
+                    fuelConsumption: "58 L"
+                    averageSpeed: "999 KM"
                 }
-
                 ListElement {
-                    name: "Blue"
-                    colorCode: "blue"
+                    dates: "02.10.2021 13:24 - 02.10.2021 13:34"
+                    elapsedTime:"10s 10dk"
+                    distanceTraveled:"1000 KM"
+                    fuelConsumption: "58 L"
+                    averageSpeed: "999 KM"
                 }
-
                 ListElement {
-                    name: "Green"
-                    colorCode: "green"
+                    dates: "02.10.2021 13:24 - 02.10.2021 13:34"
+                    elapsedTime:"10s 10dk"
+                    distanceTraveled:"1000 KM"
+                    fuelConsumption: "58 L"
+                    averageSpeed: "999 KM"
+                }
+                ListElement {
+                    dates: "02.10.2021 13:24 - 02.10.2021 13:34"
+                    elapsedTime:"10s 10dk"
+                    distanceTraveled:"1000 KM"
+                    fuelConsumption: "58 L"
+                    averageSpeed: "999 KM"
                 }
             }
         }
-
-
     }
 
 }
 
+
+
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:800}D{i:5}D{i:8}D{i:11}D{i:14}
+    D{i:0;formeditorZoom:1.1}
 }
 ##^##*/

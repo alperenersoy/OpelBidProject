@@ -5,11 +5,12 @@ import sys
 import time
 import datetime
 import math
+from PyQt5.QtCore import QVariant
 import can
 import cardata
 import threading
+import json
 from easysettings import EasySettings
-from random import randrange
 
 from PyQt5.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine
@@ -28,8 +29,11 @@ class MainWindow(QObject):
     hazardLightOn = False
 
     currentFuelLevel = None
+    insantConsumptionData = {"fuelLevel": None,"distanceTraveled": None}
+    currentInstantConsumption = None
     engineStartTime = 0
     distanceTraveled = 0
+    distanceLoop = 0
     fuelLevelOnStart = None
     # first element: count of samples, second element: current mean
     averageSpeed = [0, 0]
@@ -53,7 +57,9 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     currentIsCruiseControlActive = False
     triggeredControl = Signal(str)
+
     currentTriggeredControl = ""
+    controlTriggeredTime = None
 
     @Slot(result=float)
     def getCurrentSpeed(self):
@@ -98,19 +104,39 @@ class MainWindow(QObject):
     @Slot(result=str)
     def getTriggeredControl(self):
         return self.currentTriggeredControl
-    
-    @Slot(result=dict)
+
+    @Slot(result=str)
     def getCurrentTripData(self):
+        if(self.fuelLevelOnStart is None):
+            self.fuelLevelOnStart = self.currentFuelLevel
         if(self.currentIsEngineRunning):
             currentTripData = {
-                "elapsedTime" : str(datetime.timedelta(seconds=time.time() - self.engineStartTime)),
-                "fuelConsumption": self.fuelLevelOnStart - self.currentFuelLevel,
-                "distanceTraveled" : self.distanceTraveled,
+                "elapsedTime": str(datetime.timedelta(seconds=time.time() - self.engineStartTime)),
+                "fuelConsumption": round(self.fuelLevelOnStart - self.currentFuelLevel, 2),
+                "distanceTraveled": round(((self.distanceLoop * 1032) + self.distanceTraveled)/1000, 2),
                 "averageSpeed": self.averageSpeed[1]
             }
-            return currentTripData
+            return json.dumps(currentTripData)
         else:
-            return {}
+            return json.dumps({})
+
+    @Slot(result=float)
+    def getCurrentInstantConsumption(self):
+        if(self.insantConsumptionData["fuelLevel"] is not None and self.insantConsumptionData["distanceTraveled"] != 0):
+            fuelConsumption = self.currentFuelLevel - self.insantConsumptionData["fuelLevel"]
+            distanceTraveled =  ((self.distanceLoop * 1032) + self.distanceTraveled)/1000 - self.insantConsumptionData["distanceTraveled"]
+            instantConsumption = fuelConsumption * 100 / distanceTraveled
+            self.currentInstantConsumption = instantConsumption
+        else:
+            if(self.currentFuelLevel is not None):
+                self.insantConsumptionData["fuelLevel"] = self.currentFuelLevel
+            if(self.distanceTraveled is not None):
+                self.insantConsumptionData["distanceTraveled"] = ((self.distanceLoop * 1032) + self.distanceTraveled)/1000
+        return self.currentInstantConsumption if self.currentInstantConsumption is not None else 0
+
+    @Slot(result=str)
+    def getCurrentIgnitionStatus(self):
+        return self.currentIgnitionStatus
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -233,10 +259,9 @@ class MainWindow(QObject):
 
     def updateIgnitionStatus(self, data):
         ignitionStatus = cardata.humanizeIgnitionData(data)
-        if(self.currentIgnitionStatus == "ACCESSORY" and ignitionStatus == "ON"):
-            if(self.settings.has_option("needleSweep") and bool(self.settings.get("needleSweep")) == True):
-                print("needle")
-                # self.needleSweep()
+        if(self.currentIgnitionStatus == "ON" and ignitionStatus == "ACCESSORY"):
+            self.shutDown()
+
         if(self.currentIgnitionStatus == "" or ignitionStatus != self.currentIgnitionStatus):
             self.currentIgnitionStatus = ignitionStatus
 
@@ -252,11 +277,12 @@ class MainWindow(QObject):
         self.rpm.emit(self.currentRpm)
         self.isEngineRunning.emit(self.currentIsEngineRunning)
         self.isIgnitionOn.emit(self.currentIsIgnitionOn)
-        newSampleCount = self.averageSpeed[0] + 1
-        currentAverageSpeedTotal = self.averageSpeed[0] * self.averageSpeed[1]
-        newAverageSpeedTotal = currentAverageSpeedTotal + self.currentSpeed
-        self.averageSpeed = [newSampleCount,
-                             newAverageSpeedTotal / newSampleCount]
+        if(self.currentSpeed > 0):
+            newSampleCount = self.averageSpeed[0] + 1
+            currentAverageSpeedTotal = self.averageSpeed[0] * self.averageSpeed[1]
+            newAverageSpeedTotal = currentAverageSpeedTotal + self.currentSpeed
+            self.averageSpeed = [newSampleCount,
+                                newAverageSpeedTotal / newSampleCount]
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
@@ -279,13 +305,18 @@ class MainWindow(QObject):
 
     def updateDistanceTraveled(self, data):
         distanceTraveled = cardata.humanizeDistanceData(data)
+        if(distanceTraveled < self.distanceTraveled):
+            # it means new distance loop started
+            self.distanceLoop += 1
         self.distanceTraveled = distanceTraveled
 
     def triggerSWControl(self, data):
         triggeredControls = cardata.humanizeSWControls(data)
         for triggeredControl in triggeredControls:
-            self.currentTriggeredControl = triggeredControl
-            self.triggeredControl.emit(self.currentTriggeredControl)
+            if(time.time() - self.controlTriggeredTime > 1):
+                self.currentTriggeredControl = triggeredControl
+                self.triggeredControl.emit(self.currentTriggeredControl)
+                self.controlTriggeredTime = time.time()
 
     def triggerEngineStatus(self, newIsEngineRunning, currentIsEngineRunning):
         if(currentIsEngineRunning == False and newIsEngineRunning == True):
@@ -344,6 +375,8 @@ class MainWindow(QObject):
                             print("Needle sweep message NOT sent.")
                 tour += 1
 
+    def shutDown(self):
+        os.system("shutdown now -h")
 
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)

@@ -159,7 +159,7 @@ Item {
                         x: 115
                         y: 43
                         color: "#ffffff"
-                        text: instantConsumption + " L / s"
+                        text: instantConsumption + " L / 100 KM"
                         anchors.bottom: parent.bottom
                         font.pixelSize: 20
                         horizontalAlignment: Text.AlignHCenter

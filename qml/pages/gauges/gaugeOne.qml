@@ -12,6 +12,7 @@ Item {
     property double engineTemp: 0
     property bool isCanOnline: false
     property bool isCruiseControlActive: false
+    property bool isIgnitionOn: false
 
     FontLoader{
         id: fontLoader
@@ -78,7 +79,7 @@ Item {
             y: 39
             width: 98
             height: 20
-            visible: true
+            visible: isIgnitionOn
             color: "#ffffff"
             radius: 10
             border.color: "#7f353637"
@@ -184,7 +185,7 @@ Item {
             y: 39
             width: 98
             height: 20
-            visible: true
+            visible: isIgnitionOn
             color: "#ffffff"
             radius: 10
             border.color: "#7f353637"

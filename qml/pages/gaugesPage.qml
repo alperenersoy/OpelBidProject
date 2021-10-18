@@ -67,6 +67,11 @@ Item {
             stackViewGauge2.currentItem.engineTemp = engineTemp
             stackViewGauge3.currentItem.engineTemp = engineTemp
         }
+        onIsIgnitionOnChanged: {
+            stackViewGauge1.currentItem.isIgnitionOn = isIgnitionOn
+            stackViewGauge2.currentItem.isIgnitionOn = isIgnitionOn
+            stackViewGauge3.currentItem.isIgnitionOn = isIgnitionOn
+        }
         onIsEngineRunningChanged:
         {
 

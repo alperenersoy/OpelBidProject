@@ -37,6 +37,7 @@ class MainWindow(QObject):
     fuelLevelOnStart = None
     # first element: count of samples, second element: current mean
     averageSpeed = [0, 0]
+    isShutDownSet = False
 
     isCanOnline = Signal(bool)
     currentIsCanOnline = False
@@ -282,6 +283,8 @@ class MainWindow(QObject):
                                 newAverageSpeedTotal / newSampleCount]
         if(self.currentIsIgnitionOn == False and self.currentIsEngineRunning == False and self.currentIgnitionStatus != "START"):
             self.shutDown()
+        if(self.currentIsIgnitionOn == True or self.currentIsEngineRunning == False or self.currentIgnitionStatus != "ON" or self.currentIgnitionStatus != "START"):
+            self.cancelShutDown()
 
 
     def updateEngineData(self, data):
@@ -376,7 +379,13 @@ class MainWindow(QObject):
                 tour += 1
 
     def shutDown(self):
-        os.system("shutdown now -h")
+        os.system("shutdown -h +29")
+        print("shutdown is set")
+        self.isShutDownSet = True
+    def cancelShutDown(self):
+        os.system("shutdown -c")
+        print("shutdown is cancelled")
+        self.isShutDownSet = False
 
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)

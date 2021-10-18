@@ -44,7 +44,7 @@ KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x305,
 def humanizeMotionData(data):
     data = convertByteArrayToList(data)
     isIgnitionOn = (False, True)[data[0] == "03"] #before running engine
-    isEngineRunning = (False, True)[data[0] == "13"]
+    isEngineRunning = (False, True)[data[0] == "13" or data[0]==23]
     speedHex = data[4] + data[5]
     speed = int(round(int(speedHex, 16) / 128))
     rpmHex = data[1] + data[2]

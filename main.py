@@ -281,7 +281,7 @@ class MainWindow(QObject):
             self.averageSpeed = [newSampleCount,
                                 newAverageSpeedTotal / newSampleCount]
         print(self.currentIsEngineRunning)
-        print(self.isIgnitionOn)
+        print(self.currentIsIgnitionOn)
 
 
     def updateEngineData(self, data):

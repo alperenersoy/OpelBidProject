@@ -259,7 +259,7 @@ class MainWindow(QObject):
 
     def updateIgnitionStatus(self, data):
         ignitionStatus = cardata.humanizeIgnitionData(data)
-        if(self.currentIgnitionStatus == "ON" and ignitionStatus == "ACCESSORY"):
+        if(self.currentIgnitionStatus == "ON" and (ignitionStatus == "ACCESSORY" or ignitionStatus == "LOCK")):
             self.shutDown()
 
         if(self.currentIgnitionStatus == "" or ignitionStatus != self.currentIgnitionStatus):

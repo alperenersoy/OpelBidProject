@@ -60,7 +60,7 @@ class MainWindow(QObject):
     triggeredControl = Signal(str)
 
     currentTriggeredControl = ""
-    controlTriggeredTime = None
+    controlTriggeredTime = time.time()
 
     @Slot(result=float)
     def getCurrentSpeed(self):

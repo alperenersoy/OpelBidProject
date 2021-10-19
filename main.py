@@ -135,9 +135,9 @@ class MainWindow(QObject):
                 self.insantConsumptionData["distanceTraveled"] = ((self.distanceLoop * 1032) + self.distanceTraveled)/1000
         return self.currentInstantConsumption if self.currentInstantConsumption is not None else 0
 
-    @Slot(result=str)
-    def getCurrentIgnitionStatus(self):
-        return self.currentIgnitionStatus
+    @Slot(result=bool)
+    def getIsIgnitionOn(self):
+        return self.isIgnitionOn
 
     @Slot(str, str)
     def setSetting(self, setting, value):

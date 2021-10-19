@@ -19,32 +19,36 @@ canMessages = {
 }
 
 # constants
-HAZARD_LIGHTS_ON2 = can.Message(arbitration_id=0x260,data=[0x1F, 0x43, 0x7F], is_extended_id = False)
-HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x305,data=[0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80,0x00], is_extended_id = False)
-HAZARD_LIGHTS_OFF2 = can.Message(arbitration_id=0x305,data=[0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80,0x00], is_extended_id = False)
+HAZARD_LIGHTS_ON2 = can.Message(arbitration_id=0x260, data=[
+                                0x1F, 0x43, 0x7F], is_extended_id=False)
+HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x305, data=[
+                               0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80, 0x00], is_extended_id=False)
+HAZARD_LIGHTS_OFF2 = can.Message(arbitration_id=0x305, data=[
+                                 0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80, 0x00], is_extended_id=False)
 HAZARD_LIGHTS_OFF = can.Message(arbitration_id=0x260,
-                               data=[0x00, 0x00, 0x00], is_extended_id = False)
+                                data=[0x00, 0x00, 0x00], is_extended_id=False)
 SIDE_LIGHTS_ON = can.Message(arbitration_id=0x305,
-                               data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00], is_extended_id = False) #must be send in a loop. automatic off
+                             data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00], is_extended_id=False)  # must be send in a loop. automatic off
 HEAD_LIGHTS_ON = can.Message(arbitration_id=0x305,
-                               data=[0x00, 0x00, 0xC0, 0x00, 0x10, 0x00, 0x80, 0x00], is_extended_id = False) #must be send in a loop. automatic off
+                             data=[0x00, 0x00, 0xC0, 0x00, 0x10, 0x00, 0x80, 0x00], is_extended_id=False)  # must be send in a loop. automatic off
 HIGH_BEAM_LIGHTS_ON = can.Message(arbitration_id=175,
-                               data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id = False)
+                                  data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id=False)
 HIGH_BEAM_LIGHTS_OFF = can.Message(arbitration_id=175,
-                               data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id = False)
+                                   data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id=False)
 KEY_BUTTONS_LOCK = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x40, 0x05, 0x8F], is_extended_id = False)
+                               data=[0x02, 0x40, 0x05, 0x8F], is_extended_id=False)
 KEY_BUTTONS_UNLOCK = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x10, 0x05, 0x8F], is_extended_id = False)
+                                 data=[0x02, 0x10, 0x05, 0x8F], is_extended_id=False)
 KEY_BUTTONS_LOCK_HOLD = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0xC0, 0x05, 0x8F], is_extended_id = False) #closing windows
+                                    data=[0x02, 0xC0, 0x05, 0x8F], is_extended_id=False)  # closing windows
 KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x305,
-                               data=[0x02, 0x30, 0x05, 0x8F], is_extended_id = False) #opening windows
+                                      data=[0x02, 0x30, 0x05, 0x8F], is_extended_id=False)  # opening windows
+
 
 def humanizeMotionData(data):
     data = convertByteArrayToList(data)
-    isIgnitionOn = (False, True)[data[0] == "03"] #before running engine
-    isEngineRunning = (False, True)[data[0] == "13" or data[0]==23]
+    isIgnitionOn = (False, True)[data[0] == "03"]  # before running engine
+    isEngineRunning = (False, True)[data[0] == "13" or data[0] == "23"]
     speedHex = data[4] + data[5]
     speed = int(round(int(speedHex, 16) / 128))
     rpmHex = data[1] + data[2]
@@ -135,13 +139,15 @@ def humanizeDoorOpenData(data):
         openedDoors.append("BACK_RIGHT")
         openedDoors.append("TRUNK")
     return openedDoors
-    
+
+
 def humanizeGearData(data):
     data = convertByteArrayToList(data)
     if data[0] == "12" or data[0] == "16":
         return "REVERSE"
-    elif data[0] == "02" or data[2] =="06":
+    elif data[0] == "02" or data[2] == "06":
         return "NOT_REVERSE"
+
 
 def humanizeHandBrakeData(data):
     data = convertByteArrayToList(data)
@@ -149,6 +155,7 @@ def humanizeHandBrakeData(data):
         return "PULLED"
     elif data[0] == "00":
         return "NOT_PULLED"
+
 
 def humanizeIgnitionData(data):
     data = convertByteArrayToList(data)
@@ -161,14 +168,19 @@ def humanizeIgnitionData(data):
     elif data[0] == "76":
         return "START"
 
+
 def humanizeDistanceData(data):
     data = convertByteArrayToList(data)
     frontLeftWheelDistanceHex = data[1] + data[2]
     frontRightWheelDistanceHex = data[3] + data[4]
-    frontLeftWheelDistance = int(frontLeftWheelDistanceHex, 16) * 1.5748 # as meters
-    frontRightWheelDistance = int(frontRightWheelDistanceHex, 16) * 1.5748 # as meters
-    meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2 # mean of distances in case of getting different values
+    frontLeftWheelDistance = int(
+        frontLeftWheelDistanceHex, 16) * 1.5748  # as meters
+    frontRightWheelDistance = int(
+        frontRightWheelDistanceHex, 16) * 1.5748  # as meters
+    # mean of distances in case of getting different values
+    meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2
     return meanDistance
+
 
 def convertByteArrayToList(bytearr):  # is this really required??
     hexList = list(bytearr.hex())

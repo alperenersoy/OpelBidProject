@@ -465,18 +465,17 @@ Window {
                 stackViewFuel.currentItem.instantConsumption = currentInstantConsumption;
             }
 
-            var ignitionStatus = backend.getCurrentIgnitionStatus();
-            if(ignitionStatus)
+            var ignitionOn = backend.getIsIgnitionOn();
+            if(ignitionOn)
             {
-                if(ignitionStatus == "ON" || ignitionStatus == "START"){
                     isIgnitionOn = true;
                     stackViewGauges.currentItem.isIgnitionOn = true;
-                }
-                else{
+            }
+            else{
                     isIgnitionOn = false;
                     stackViewGauges.currentItem.isIgnitionOn = false;
-                }
             }
+            
         }
     }
 

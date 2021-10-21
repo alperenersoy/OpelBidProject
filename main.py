@@ -256,7 +256,6 @@ class MainWindow(QObject):
 
     def updateTime(self, data):
         timeData = cardata.humanizeTimeData(data)
-        print(timeData)
         self.currentTime = timeData["time"]
         self.currentDate = timeData["date"]
 

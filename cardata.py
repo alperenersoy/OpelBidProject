@@ -196,7 +196,7 @@ def humanizeTimeData(data):
     format = '%Y-%m-%d %H:%M:%S'
     time = datetime.strptime(fullDateTime, format)
     # fix wrong date time
-    fixedDate = time + timedelta(days=5252) - timedelta(hours=1, minutes=23)
+    fixedDate = time + timedelta(days=5251) - timedelta(hours=1, minutes=23)
     finalDate = fixedDate.strftime("%d.%m.%Y")
     finalTime = fixedDate.strftime("%H:%M")
     return {"date": finalDate, "time": finalTime}

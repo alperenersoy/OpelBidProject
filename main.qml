@@ -419,6 +419,14 @@ Window {
             var nowDate =  Qt.formatDateTime(new Date(), "dd.MM.yyyy");
             var nowTime = Qt.formatTime(new Date(),"hh:mm");
             
+            var time = backend.getCurrentTime();
+            var date = backend.getCurrentDate();
+
+            if(time != "")
+                nowTime = time
+            if(date != "")
+                nowDate = date
+
             clock.text = nowTime;
             stackViewHome.currentItem.clock = nowTime;
             stackViewHome.currentItem.date = nowDate;

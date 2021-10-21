@@ -22,6 +22,8 @@ class MainWindow(QObject):
     def __init__(self):
         QObject.__init__(self)
 
+    print(cardata.humanizeTimeData(bytearray.fromhex("0088282800383007")))
+
     settings = EasySettings("settings.conf")
 
     currentIgnitionStatus = ""
@@ -29,7 +31,7 @@ class MainWindow(QObject):
     hazardLightOn = False
 
     currentFuelLevel = None
-    insantConsumptionData = {"fuelLevel": None,"distanceTraveled": None}
+    insantConsumptionData = {"fuelLevel": None, "distanceTraveled": None}
     currentInstantConsumption = None
     engineStartTime = 0
     distanceTraveled = 0
@@ -38,6 +40,9 @@ class MainWindow(QObject):
     # first element: count of samples, second element: current mean
     averageSpeed = [0, 0]
     isShutDownSet = False
+
+    currentTime = None
+    currentDate = None
 
     isCanOnline = Signal(bool)
     currentIsCanOnline = False
@@ -107,6 +112,16 @@ class MainWindow(QObject):
         return self.currentTriggeredControl
 
     @Slot(result=str)
+    def getCurrentTime(self):
+        if(self.currentTime is not None):
+            return self.currentTime
+    
+    @Slot(result=str)
+    def getCurrentDate(self):
+        if(self.currentDate is not None):
+            return self.currentDate
+
+    @Slot(result=str)
     def getCurrentTripData(self):
         if(self.fuelLevelOnStart is None):
             self.fuelLevelOnStart = self.currentFuelLevel
@@ -124,15 +139,18 @@ class MainWindow(QObject):
     @Slot(result=float)
     def getCurrentInstantConsumption(self):
         if(self.insantConsumptionData["fuelLevel"] is not None and self.insantConsumptionData["distanceTraveled"] != 0):
-            fuelConsumption = self.currentFuelLevel - self.insantConsumptionData["fuelLevel"]
-            distanceTraveled =  ((self.distanceLoop * 1032) + self.distanceTraveled)/1000 - self.insantConsumptionData["distanceTraveled"]
+            fuelConsumption = self.currentFuelLevel - \
+                self.insantConsumptionData["fuelLevel"]
+            distanceTraveled = ((self.distanceLoop * 1032) + self.distanceTraveled) / \
+                1000 - self.insantConsumptionData["distanceTraveled"]
             instantConsumption = fuelConsumption * 100 / distanceTraveled
             self.currentInstantConsumption = instantConsumption
         else:
             if(self.currentFuelLevel is not None):
                 self.insantConsumptionData["fuelLevel"] = self.currentFuelLevel
             if(self.distanceTraveled is not None):
-                self.insantConsumptionData["distanceTraveled"] = ((self.distanceLoop * 1032) + self.distanceTraveled)/1000
+                self.insantConsumptionData["distanceTraveled"] = (
+                    (self.distanceLoop * 1032) + self.distanceTraveled)/1000
         return self.currentInstantConsumption if self.currentInstantConsumption is not None else 0
 
     @Slot(result=bool)
@@ -209,6 +227,8 @@ class MainWindow(QObject):
     def checkCanMessage(self, id, data):
         if(id in cardata.canMessages and cardata.canMessages[id] == 'MOTION'):
             self.updateMotionData(data)
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'TIME'):
+            self.updateTime(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'ENGINE'):
             self.updateEngineData(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'AIR_TEMP'):
@@ -235,6 +255,11 @@ class MainWindow(QObject):
                         print("Key button lock hold message sent.")
                 except can.CanError:
                     print("Key button lock hold message NOT sent.")
+
+    def updateTime(self, data):
+        timeData = cardata.humanizeGearData(data)
+        self.currentTime = timeData["time"]
+        self.currentDate = timeData["date"]
 
     def updateGearStatus(self, data):
         gearStatus = cardata.humanizeGearData(data)
@@ -277,16 +302,16 @@ class MainWindow(QObject):
         self.isIgnitionOn.emit(self.currentIsIgnitionOn)
         if(self.currentSpeed > 0):
             newSampleCount = self.averageSpeed[0] + 1
-            currentAverageSpeedTotal = self.averageSpeed[0] * self.averageSpeed[1]
+            currentAverageSpeedTotal = self.averageSpeed[0] * \
+                self.averageSpeed[1]
             newAverageSpeedTotal = currentAverageSpeedTotal + self.currentSpeed
             self.averageSpeed = [newSampleCount,
-                                newAverageSpeedTotal / newSampleCount]
-        
+                                 newAverageSpeedTotal / newSampleCount]
+
         if(self.isShutDownSet == False and self.currentIsIgnitionOn == False and self.currentIsEngineRunning == False and (self.currentIgnitionStatus != "START" or self.currentIgnitionStatus != "ON")):
             self.shutDown()
         if(self.isShutDownSet and (self.currentIsIgnitionOn == True or self.currentIsEngineRunning == True or self.currentIgnitionStatus == "ON" or self.currentIgnitionStatus == "START")):
             self.cancelShutDown()
-
 
     def updateEngineData(self, data):
         engineData = cardata.humanizeEngineData(data)
@@ -383,10 +408,12 @@ class MainWindow(QObject):
         os.system("shutdown -h +29")
         print("shutdown is set")
         self.isShutDownSet = True
+
     def cancelShutDown(self):
         os.system("shutdown -c")
         print("shutdown is cancelled")
         self.isShutDownSet = False
+
 
 if __name__ == "__main__":
     app = QGuiApplication(sys.argv)

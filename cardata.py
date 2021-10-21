@@ -1,4 +1,5 @@
 import can
+from datetime import datetime, timedelta
 fuelCapacity = 58  # For Opel Zafira B
 
 canMessages = {
@@ -15,7 +16,8 @@ canMessages = {
     0X370:  "HANDBRAKE_STATUS",
     0x170:  "IGNITION_STATUS",
     0x160:  "KEY_BUTTONS",
-    0x110:  "DISTANCE_TRAVELED"
+    0x110:  "DISTANCE_TRAVELED",
+    0x440:  "TIME"
 }
 
 # constants
@@ -180,6 +182,24 @@ def humanizeDistanceData(data):
     # mean of distances in case of getting different values
     meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2
     return meanDistance
+
+
+def humanizeTimeData(data):
+    data = convertByteArrayToList(data)
+    day = str(int(int(data[5], 16) / 8)).zfill(2)  # i guess
+    month = str(int(int(data[6], 16) / 8)).zfill(2)  # i guess
+    year = "20" + str(int(data[7], 16)).zfill(2)  # i guess
+    hour = str(int(int(data[0], 16) / 8)).zfill(2)
+    minute = str(int(int(data[1], 16) / 4)).zfill(2)
+    second = str(int(int(data[2], 16) / 4)).zfill(2)
+    fullDateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second
+    format = '%Y-%m-%d %H:%M:%S'
+    time = datetime.strptime(fullDateTime, format)
+    # fix wrong date time
+    fixedDate = time + timedelta(days=5252) - timedelta(hours=1, minutes=23)
+    finalDate = fixedDate.strftime("%d.%m.%Y")
+    finalTime = fixedDate.strftime("%H:%M")
+    return {"date": finalDate, "time": finalTime}
 
 
 def convertByteArrayToList(bytearr):  # is this really required??

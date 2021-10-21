@@ -256,6 +256,7 @@ class MainWindow(QObject):
 
     def updateTime(self, data):
         timeData = cardata.humanizeTimeData(data)
+        print(timeData)
         self.currentTime = timeData["time"]
         self.currentDate = timeData["date"]
 
@@ -322,7 +323,6 @@ class MainWindow(QObject):
         airTemp = cardata.humanizeAirTemp(data)
         self.currentAirTemp = float(airTemp)
         self.airTemp.emit(self.currentAirTemp)
-        print(airTemp)
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)

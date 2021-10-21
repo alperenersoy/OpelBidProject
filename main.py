@@ -21,7 +21,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 class MainWindow(QObject):
     def __init__(self):
         QObject.__init__(self)
-        
+
     settings = EasySettings("settings.conf")
 
     currentIgnitionStatus = ""
@@ -255,7 +255,7 @@ class MainWindow(QObject):
                     print("Key button lock hold message NOT sent.")
 
     def updateTime(self, data):
-        timeData = cardata.humanizeGearData(data)
+        timeData = cardata.humanizeTimeData(data)
         self.currentTime = timeData["time"]
         self.currentDate = timeData["date"]
 

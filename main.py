@@ -21,9 +21,7 @@ from PySide2.QtCore import QObject, Signal, Slot
 class MainWindow(QObject):
     def __init__(self):
         QObject.__init__(self)
-
-    print(cardata.humanizeTimeData(bytearray.fromhex("0088282800383007")))
-
+        
     settings = EasySettings("settings.conf")
 
     currentIgnitionStatus = ""
@@ -324,6 +322,7 @@ class MainWindow(QObject):
         airTemp = cardata.humanizeAirTemp(data)
         self.currentAirTemp = float(airTemp)
         self.airTemp.emit(self.currentAirTemp)
+        print(airTemp)
 
     def updateFuelLevel(self, data):
         fuelLevel = cardata.humanizeFuelLevel(data)

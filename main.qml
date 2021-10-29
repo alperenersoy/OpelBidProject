@@ -455,7 +455,6 @@ Window {
                 stackViewDoorOpen.currentItem.backRightOpen = false;
                 stackViewDoorOpen.currentItem.trunkOpen = false;
 
-                console.log(openDoors)
                 if(openDoors.length>0)
                 {
                     for(var i=0; i< openDoors.length; i++)
@@ -472,10 +471,11 @@ Window {
                             stackViewDoorOpen.currentItem.trunkOpen = true;
                     }
                     openDoorsMouseArea.visible = true;
-                    currentOpenDoors = backend.getOpenDoors();
                 }
                 else
                     openDoorsMouseArea.visible = false;
+                
+                currentOpenDoors = backend.getOpenDoors();
             }
 
             //if(backend.getSetting("autoHeadLights"))

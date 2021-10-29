@@ -253,7 +253,6 @@ class MainWindow(QObject):
 
     def updateOpenDoors(self, data):
         openDoors = cardata.humanizeDoorOpenData(data)
-        print(openDoors)
         self.openDoors = openDoors
 
     def triggerKeyButtons(self, data):
@@ -261,8 +260,9 @@ class MainWindow(QObject):
             if data == cardata.KEY_BUTTONS_LOCK.data:
                 try:
                     if(self.bus is not None):
-                        self.bus.send(cardata.KEY_BUTTONS_LOCK_HOLD)
-                        print("Key button lock hold message sent.")
+                            os.system("cansend can0 160#02C0058F")
+                            #self.bus.send(cardata.KEY_BUTTONS_LOCK_HOLD)
+                            print("Key button lock hold message sent.")
                 except can.CanError:
                     print("Key button lock hold message NOT sent.")
 

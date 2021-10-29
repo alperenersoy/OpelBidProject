@@ -251,11 +251,9 @@ class MainWindow(QObject):
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'DOOR_OPEN'):
             self.updateOpenDoors(data)
 
-        if(id not in cardata.canMessages or cardata.canMessages[id] != 'DOOR_OPEN'):
-            self.openDoors = []
-
     def updateOpenDoors(self, data):
         openDoors = cardata.humanizeDoorOpenData(data)
+        print(openDoors)
         self.openDoors = openDoors
 
     def triggerKeyButtons(self, data):

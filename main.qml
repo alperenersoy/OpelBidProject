@@ -455,7 +455,7 @@ Window {
                 stackViewDoorOpen.currentItem.backRightOpen = false;
                 stackViewDoorOpen.currentItem.trunkOpen = false;
 
-
+                console.log(openDoors)
                 if(openDoors.length>0)
                 {
                     for(var i=0; i< openDoors.length; i++)

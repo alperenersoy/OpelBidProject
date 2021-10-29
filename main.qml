@@ -528,7 +528,9 @@ Window {
         visible: false
         onClicked: {
              if(openDoorsMouseArea.visible==true)
+             {
                  openDoorsMouseArea.visible=false;
+             }
         }
 
         StackView {
@@ -554,7 +556,7 @@ Window {
                 flat: true
                 anchors.rightMargin: 0
                 onClicked: {
-                    stackViewDoorOpen.visible = false;
+                    openDoorsMouseArea.visible = false;
                 }
 
                 Rectangle {

@@ -124,7 +124,7 @@ def humanizeVoltage(data):
 def humanizeDoorOpenData(data):
     data = convertByteArrayToList(data)
     openDoors = []
-    if data[2] == "44":
+    if data[2] == "40":
         openDoors.append("FRONT_LEFT")
     elif data[2] == "04":
         openDoors.append("TRUNK")

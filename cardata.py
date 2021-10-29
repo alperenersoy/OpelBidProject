@@ -21,14 +21,14 @@ canMessages = {
 }
 
 # constants
-HAZARD_LIGHTS_ON2 = can.Message(arbitration_id=0x260, data=[
+HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x260, data=[
                                 0x1F, 0x43, 0x7F], is_extended_id=False)
-HAZARD_LIGHTS_ON = can.Message(arbitration_id=0x305, data=[
+HAZARD_LIGHTS_ON2 = can.Message(arbitration_id=0x305, data=[
                                0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80, 0x00], is_extended_id=False)
-HAZARD_LIGHTS_OFF2 = can.Message(arbitration_id=0x305, data=[
-                                 0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80, 0x00], is_extended_id=False)
 HAZARD_LIGHTS_OFF = can.Message(arbitration_id=0x260,
                                 data=[0x00, 0x00, 0x00], is_extended_id=False)
+HAZARD_LIGHTS_OFF2 = can.Message(arbitration_id=0x305, data=[
+                                 0x00, 0x00, 0x00, 0x10, 0x00, 0x10, 0x80, 0x00], is_extended_id=False)
 SIDE_LIGHTS_ON = can.Message(arbitration_id=0x305,
                              data=[0x00, 0x00, 0x40, 0x00, 0x10, 0x00, 0x00, 0x00], is_extended_id=False)  # must be send in a loop. automatic off
 HEAD_LIGHTS_ON = can.Message(arbitration_id=0x305,
@@ -37,13 +37,13 @@ HIGH_BEAM_LIGHTS_ON = can.Message(arbitration_id=175,
                                   data=[0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id=False)
 HIGH_BEAM_LIGHTS_OFF = can.Message(arbitration_id=175,
                                    data=[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00], is_extended_id=False)
-KEY_BUTTONS_LOCK = can.Message(arbitration_id=0x305,
+KEY_BUTTONS_LOCK = can.Message(arbitration_id=0x160,
                                data=[0x02, 0x40, 0x05, 0x8F], is_extended_id=False)
-KEY_BUTTONS_UNLOCK = can.Message(arbitration_id=0x305,
+KEY_BUTTONS_UNLOCK = can.Message(arbitration_id=0x160,
                                  data=[0x02, 0x10, 0x05, 0x8F], is_extended_id=False)
-KEY_BUTTONS_LOCK_HOLD = can.Message(arbitration_id=0x305,
+KEY_BUTTONS_LOCK_HOLD = can.Message(arbitration_id=0x160,
                                     data=[0x02, 0xC0, 0x05, 0x8F], is_extended_id=False)  # closing windows
-KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x305,
+KEY_BUTTONS_UNLOCK_HOLD = can.Message(arbitration_id=0x160,
                                       data=[0x02, 0x30, 0x05, 0x8F], is_extended_id=False)  # opening windows
 
 
@@ -123,24 +123,24 @@ def humanizeVoltage(data):
 
 def humanizeDoorOpenData(data):
     data = convertByteArrayToList(data)
-    openedDoors = []
+    openDoors = []
     if data[2] == "44":
-        openedDoors.append("FRONT_LEFT")
+        openDoors.append("FRONT_LEFT")
     elif data[2] == "04":
-        openedDoors.append("TRUNK")
+        openDoors.append("TRUNK")
     elif data[1] == "50" and data[2] == "10":
-        openedDoors.append("BACK_RIGHT")
+        openDoors.append("BACK_RIGHT")
     elif data[1] == "50" and data[2] == "50":
-        openedDoors.append("FRONT_LEFT")
-        openedDoors.append("BACK_RIGHT")
+        openDoors.append("FRONT_LEFT")
+        openDoors.append("BACK_RIGHT")
     elif data[1] == "50" and data[2] == "14":
-        openedDoors.append("TRUNK")
-        openedDoors.append("BACK_RIGHT")
+        openDoors.append("TRUNK")
+        openDoors.append("BACK_RIGHT")
     elif data[1] == "50" and data[2] == "54":
-        openedDoors.append("FRONT_LEFT")
-        openedDoors.append("BACK_RIGHT")
-        openedDoors.append("TRUNK")
-    return openedDoors
+        openDoors.append("FRONT_LEFT")
+        openDoors.append("BACK_RIGHT")
+        openDoors.append("TRUNK")
+    return openDoors
 
 
 def humanizeGearData(data):

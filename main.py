@@ -38,6 +38,7 @@ class MainWindow(QObject):
     # first element: count of samples, second element: current mean
     averageSpeed = [0, 0]
     isShutDownSet = False
+    openDoors = []
 
     currentTime = None
     currentDate = None
@@ -113,11 +114,15 @@ class MainWindow(QObject):
     def getCurrentTime(self):
         if(self.currentTime is not None):
             return self.currentTime
-    
+
     @Slot(result=str)
     def getCurrentDate(self):
         if(self.currentDate is not None):
             return self.currentDate
+
+    @Slot(result=str)
+    def getOpenDoors(self):
+        return json.dumps(self.openDoors)
 
     @Slot(result=str)
     def getCurrentTripData(self):
@@ -243,6 +248,12 @@ class MainWindow(QObject):
             self.triggerKeyButtons(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'DISTANCE_TRAVELED'):
             self.updateDistanceTraveled(data)
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'DOOR_OPEN'):
+            self.updateOpenDoors(data)
+
+    def updateOpenDoors(self, data):
+        openDoors = cardata.humanizeDoorOpenData(data)
+        self.openDoors = openDoors
 
     def triggerKeyButtons(self, data):
         if(self.settings.has_option("closeWindowOnLock") and bool(self.settings.get("closeWindowOnLock")) == True):
@@ -271,7 +282,7 @@ class MainWindow(QObject):
                         print("Hazard lights on message sent.")
                 except can.CanError:
                     print("Hazard lights on message NOT sent.")
-            else:
+            elif(gearStatus == 'NOT_REVERSE'):
                 try:
                     if(self.bus is not None and self.hazardLightOn == True):
                         self.bus.send(cardata.HAZARD_LIGHTS_OFF)

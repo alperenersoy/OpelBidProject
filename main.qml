@@ -18,6 +18,7 @@ Window {
     property bool isIgnitionOn: false
     property bool isCruiseControlActive: false
     property bool isHeadLightsOn: false
+    property string currentOpenDoors: ""
 
     Rectangle {
         id: topbar
@@ -315,6 +316,7 @@ Window {
         z: 5
         currentIndex: 0
         /* interactive: false*/
+
         Item {
             id: item1
             z: 0
@@ -444,6 +446,38 @@ Window {
             if(currentTripData.averageSpeed)
                 stackViewTrips.currentItem.currentAverageSpeed = currentTripData.averageSpeed
 
+            if(backend.getOpenDoors() != currentOpenDoors)
+            {
+                var openDoors = JSON.parse(backend.getOpenDoors());
+                stackViewDoorOpen.currentItem.frontLeftOpen = false;
+                stackViewDoorOpen.currentItem.frontRightOpen = false;
+                stackViewDoorOpen.currentItem.backLeftOpen = false;
+                stackViewDoorOpen.currentItem.backRightOpen = false;
+                stackViewDoorOpen.currentItem.trunkOpen = false;
+
+
+                if(openDoors.length>0)
+                {
+                    for(var i=0; i< openDoors.length; i++)
+                    {
+                        if(openDoors[i] == "FRONT_LEFT")
+                            stackViewDoorOpen.currentItem.frontLeftOpen = true;
+                        if(openDoors[i] == "FRONT_RIGHT")
+                            stackViewDoorOpen.currentItem.frontRightOpen = true;
+                        if(openDoors[i] == "BACK_LEFT")
+                            stackViewDoorOpen.currentItem.backLeftOpen = true;
+                        if(openDoors[i] == "BACK_RIGHT")
+                            stackViewDoorOpen.currentItem.backRightOpen = true;
+                        if(openDoors[i] == "TRUNK")
+                            stackViewDoorOpen.currentItem.trunkOpen = true;
+                    }
+                    openDoorsMouseArea.visible = true;
+                    currentOpenDoors = backend.getOpenDoors();
+                }
+                else
+                    openDoorsMouseArea.visible = false;
+            }
+
             //if(backend.getSetting("autoHeadLights"))
             if(false)
             {
@@ -476,14 +510,70 @@ Window {
             var ignitionOn = backend.getIsIgnitionOn();
             if(ignitionOn)
             {
-                    isIgnitionOn = true;
-                    stackViewGauges.currentItem.isIgnitionOn = true;
+                isIgnitionOn = true;
+                stackViewGauges.currentItem.isIgnitionOn = true;
             }
             else{
-                    isIgnitionOn = false;
-                    stackViewGauges.currentItem.isIgnitionOn = false;
+                isIgnitionOn = false;
+                stackViewGauges.currentItem.isIgnitionOn = false;
             }
             
+        }
+    }
+
+    MouseArea {
+        id: openDoorsMouseArea
+        anchors.fill: parent
+        z: 10
+        visible: false
+        onClicked: {
+             if(openDoorsMouseArea.visible==true)
+                 openDoorsMouseArea.visible=false;
+        }
+
+        StackView {
+            id: stackViewDoorOpen
+            x: 240
+            y: 80
+            width: 320
+            height: 320
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            z: 10
+            initialItem: "qml/pages/doorOpen.qml"
+            visible: true
+
+            Button {
+                id: button
+                width: 40
+                text: qsTr("")
+                anchors.right: parent.right
+                z: 6
+                display: AbstractButton.IconOnly
+                autoRepeat: false
+                flat: true
+                anchors.rightMargin: 0
+                onClicked: {
+                    stackViewDoorOpen.visible = false;
+                }
+
+                Rectangle {
+                    id: rectangle
+                    color: "#00000000"
+                    anchors.fill: parent
+                }
+
+                Text {
+                    id: text1
+                    color: "#ffffff"
+                    text: qsTr("x")
+                    anchors.fill: parent
+                    font.pixelSize: 20
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+            }
         }
     }
 
@@ -636,8 +726,16 @@ Window {
 
     }
 
+
+
 }
 
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:1.1}D{i:41}
+}
+##^##*/

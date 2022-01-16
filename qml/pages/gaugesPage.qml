@@ -10,6 +10,7 @@ Item {
     property bool isEngineRunning: false
     property bool isIgnitionOn: false
     property bool isCruiseControlActive: false
+    property string triggeredControl: "";
 
     SwipeView {
         id: swipeView
@@ -72,15 +73,19 @@ Item {
             stackViewGauge2.currentItem.isIgnitionOn = isIgnitionOn
             stackViewGauge3.currentItem.isIgnitionOn = isIgnitionOn
         }
-        onIsEngineRunningChanged:
-        {
-
-        }
         onIsCruiseControlActiveChanged:
         {
             stackViewGauge1.currentItem.isCruiseControlActive = isCruiseControlActive
             stackViewGauge2.currentItem.isCruiseControlActive = isCruiseControlActive
             stackViewGauge3.currentItem.isCruiseControlActive = isCruiseControlActive
+        }
+        onTriggeredControlChanged:
+        {
+            if(triggeredControl == 'LEFT_KNOB_UP')
+                swipeView.setCurrentIndex(swipeView.currentIndex+1)
+            else if(triggeredControl == 'LEFT_KNOB_DOWN')
+                swipeView.setCurrentIndex(swipeView.currentIndex-1)
+            triggeredControl = ""
         }
     }
 }

@@ -28,13 +28,13 @@ Item {
     Rectangle
     {
         id:rectangle
-        color: '#000000'
+        color: '#00000000'
         anchors.fill:parent
         Label {
             id: kilometer
             y: 114
             height: 160
-            color: isCruiseControlActive ? "#00ff00" : "#ededed"
+            color: isCruiseControlActive ? "#00ff00" : (speed >= 120 ? "#D10000" :  "#ededed")
             text: speed
             font.family: fontLoaderBold.name
             anchors.verticalCenter: parent.verticalCenter
@@ -91,11 +91,11 @@ Item {
 
             Text {
                 id: rpm_text
-                color: "#ffffff"
+                color: "#ededed"
                 text: rpm
                 font.family: fontLoader.name
                 anchors.fill: parent
-                font.pixelSize: 20
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.leftMargin: -125
@@ -103,23 +103,23 @@ Item {
                 fontSizeMode: Text.FixedSize
                 rotation: 90
                 onTextChanged: PropertyAnimation {
-                    target: rpm_mask; property: "width"; to: rpm_outer.width - ((parseInt(rpm_text.text)/60)*rpm_outer.width);
+                   target: rpm_mask; property: "width"; to: rpm_outer.width - ((parseInt(rpm_text.text)/60)*rpm_outer.width);
                 }
 
                 Text {
                     id: rpm_unit
                     x: 201
                     y: -22
-                    color: "#ffffff"
+                    color: "#ededed"
                     text: "RPM"
                     font.family: fontLoader.name
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 20
+                    font.pixelSize: 24
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     textFormat: Text.RichText
                     anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenterOffset: 21
+                    anchors.verticalCenterOffset: 25
                 }
             }
 
@@ -197,11 +197,11 @@ Item {
 
             Text {
                 id: engine_temp_text
-                color: "#ffffff"
+                color: "#ededed"
                 text: engineTemp
                 font.family: fontLoader.name
                 anchors.fill: parent
-                font.pixelSize: 20
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.leftMargin: -125
@@ -215,15 +215,15 @@ Item {
                     id: degree
                     x: 201
                     y: -22
-                    color: "#ffffff"
+                    color: "#ededed"
                     text: qsTr("°C")
                     font.family: fontLoader.name
                     anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 20
+                    font.pixelSize: 24
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenterOffset: 21
+                    anchors.verticalCenterOffset: 25
                 }
             }
 
@@ -346,6 +346,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:800}D{i:21}
+    D{i:0;formeditorZoom:1.5;height:480;width:800}
 }
 ##^##*/

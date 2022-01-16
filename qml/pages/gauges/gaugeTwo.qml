@@ -16,35 +16,44 @@ Item {
 
     FontLoader{
         id:analogFontBold
-        source: '../../fonts/DS-DIGIB.TTF'
+        source: '../../fonts/Interceptor Italic.otf'
     }
 
     FontLoader{
         id:analogFont
-        source: '../../fonts/DS-DIGI.TTF'
+        source: '../../fonts/7segment.ttf'
     }
 
     Rectangle
     {
         id:rectangle
         color: '#000000'
-        anchors.fill:parent
+        anchors.fill: parent
+        anchors.topMargin: -30
         Label {
             id: kilometer
             y: 114
             height: 70
-            color: isCruiseControlActive ? "#00ff00" : "#ededed"
+            color: isCruiseControlActive ? "#00ff00" : (speed >= 120 ? "#D10000" :  "#ededed")
             text: speed
             font.family: analogFontBold.name
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.right: parent.right
+            font.letterSpacing: 1.1
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            wrapMode: Text.NoWrap
+            font.italic: true
+            font.weight: Font.Normal
+            font.wordSpacing: 0.6
+            clip: false
+            textFormat: Text.AutoText
+            renderType: Text.QtRendering
             anchors.rightMargin: 210
             anchors.leftMargin: 210
             font.bold: false
-            font.pointSize: 160
+            font.pointSize: 96
 
             Label {
                 id: kms_text
@@ -53,7 +62,7 @@ Item {
                 color: "#ededed"
                 text: qsTr("km/s")
                 anchors.bottom: parent.bottom
-                anchors.bottomMargin: -100
+                anchors.bottomMargin: -75
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pointSize: 20
             }
@@ -68,7 +77,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.verticalCenterOffset: 2
+        anchors.verticalCenterOffset: -10
         anchors.rightMargin: 0
         anchors.leftMargin: 0
 
@@ -84,48 +93,16 @@ Item {
             border.color: "#7f353637"
             border.width: 1
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -22
+            anchors.horizontalCenterOffset: -75
+            anchors.verticalCenterOffset: 140
+            anchors.horizontalCenter: parent.horizontalCenter
             transformOrigin: Item.Center
-            rotation: 270
-
-            Text {
-                id: rpm_text
-                color: "#ffffff"
-                text: rpm
-                font.family: analogFontBold.name
-                anchors.fill: parent
-                font.pixelSize: 20
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                anchors.leftMargin: -125
-                anchors.bottomMargin: 0
-                fontSizeMode: Text.FixedSize
-                rotation: 90
-                onTextChanged: PropertyAnimation {
-                    target: rpm_mask; property: "width"; to: rpm_outer.width - ((parseInt(rpm_text.text)/60)*rpm_outer.width);
-                }
-
-                Text {
-                    id: rpm_unit
-                    x: 201
-                    y: -22
-                    color: "#ffffff"
-                    text: "RPM"
-                    font.family: analogFont.name
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    textFormat: Text.RichText
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenterOffset: 21
-                }
-            }
+            rotation: 180
 
             Rectangle {
                 id: rpm_mask
                 x: 98
-                width: 0
+                width: 30
                 height: 20
                 color: "#000000"
                 radius: 0
@@ -137,6 +114,26 @@ Item {
                 transformOrigin: Item.Center
                 z: 2
                 clip: false
+
+                Text {
+                    id: rpm_text
+                    y: 0
+                    visible: true
+                    color: "#ededed"
+                    text: rpm
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    font.family: analogFontBold.name
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.leftMargin: 15
+                    fontSizeMode: Text.FixedSize
+                    rotation: 180
+                    onTextChanged: PropertyAnimation {
+                        target: rpm_mask; property: "width"; to: rpm_outer.width - ((parseInt(rpm_text.text)/60)*rpm_outer.width);
+                    }
+                }
             }
 
             Rectangle {
@@ -175,66 +172,6 @@ Item {
                 }
             }
 
-            Item {
-                id: stripes
-                width: 98
-                height: 20
-
-                Rectangle {
-                    id: stripe
-                    x: 14
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe2
-                    x: 28
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe3
-                    x: 42
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe4
-                    x: 56
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe5
-                    x: 70
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe6
-                    x: 84
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-            }
-
 
 
 
@@ -252,45 +189,15 @@ Item {
             border.color: "#7f353637"
             border.width: 1
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -22
+            anchors.horizontalCenterOffset: 75
+            anchors.verticalCenterOffset: 140
+            anchors.horizontalCenter: parent.horizontalCenter
             transformOrigin: Item.Center
-            rotation: 270
-
-            Text {
-                id: engine_temp_text
-                color: "#ffffff"
-                text: engineTemp
-                anchors.fill: parent
-                font.pixelSize: 20
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                anchors.leftMargin: -125
-                fontSizeMode: Text.FixedSize
-                rotation: 90
-                font.family: analogFontBold.name
-                onTextChanged: PropertyAnimation {
-                    target: engine_temp_mask; property: "width"; to: engine_temp_outer.width - (((parseInt(engine_temp_text.text))/130)*engine_temp_outer.width);
-                }
-
-                Text {
-                    id: degree
-                    x: 201
-                    y: -22
-                    color: "#ffffff"
-                    text: qsTr("°C")
-                    anchors.verticalCenter: parent.verticalCenter
-                    font.pixelSize: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenterOffset: 21
-                    font.family: analogFont.name
-                }
-            }
+            rotation: 0
 
             Rectangle {
                 id: engine_temp_mask
-                width: 0
+                width: 40
                 height: 20
                 color: "#000000"
                 radius: 0
@@ -302,6 +209,26 @@ Item {
                 transformOrigin: Item.Center
                 z: 2
                 clip: false
+
+                Text {
+                    id: engine_temp_text
+                    y: 0
+                    width: 50
+                    visible: true
+                    color: "#ededed"
+                    text: engineTemp
+                    anchors.left: parent.left
+                    font.pixelSize: 16
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    anchors.leftMargin: 5
+                    fontSizeMode: Text.FixedSize
+                    rotation: 0
+                    font.family: analogFontBold.name
+                    onTextChanged: PropertyAnimation {
+                        target: engine_temp_mask; property: "width"; to: engine_temp_outer.width - (((parseInt(engine_temp_text.text))/130)*engine_temp_outer.width);
+                    }
+                }
             }
             Rectangle {
                 id: engine_temp_gradient
@@ -345,65 +272,6 @@ Item {
                 }
             }
 
-            Item {
-                id: stripes1
-                width: 98
-                height: 20
-                Rectangle {
-                    id: stripe1
-                    x: 14
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe7
-                    x: 28
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe8
-                    x: 42
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe9
-                    x: 56
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe10
-                    x: 70
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-
-                Rectangle {
-                    id: stripe11
-                    x: 84
-                    y: 0
-                    width: 7
-                    height: 20
-                    color: "#000000"
-                }
-            }
-
         }
     }
 
@@ -429,8 +297,8 @@ Item {
             }
         }
         Component.onCompleted: {
-             var gaugeTwoRpmHiddenSetting = backend.getSetting("gaugeTwoRpmHidden")
-             if(gaugeTwoRpmHiddenSetting !== null)
+            var gaugeTwoRpmHiddenSetting = backend.getSetting("gaugeTwoRpmHidden")
+            if(gaugeTwoRpmHiddenSetting !== null)
                 rpm_outer.visible = !(gaugeTwoRpmHiddenSetting === 'true')
         }
         
@@ -456,11 +324,12 @@ Item {
             }
         }
         Component.onCompleted: {
-             var gaugeTwoEngineTempHiddenSetting = backend.getSetting("gaugeTwoEngineTempHidden")
-             if(gaugeTwoEngineTempHiddenSetting !== null)
+            var gaugeTwoEngineTempHiddenSetting = backend.getSetting("gaugeTwoEngineTempHidden")
+            if(gaugeTwoEngineTempHiddenSetting !== null)
                 engine_temp_outer.visible = !(gaugeTwoEngineTempHiddenSetting === 'true')
         }
     }
+
 
 
 
@@ -473,6 +342,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:800}
+    D{i:0;formeditorZoom:1.1;height:480;width:800}D{i:26;locked:true}D{i:27;locked:true}
 }
 ##^##*/

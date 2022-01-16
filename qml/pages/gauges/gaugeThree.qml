@@ -56,15 +56,14 @@ Item {
                     id: rpm_text
                     width: 22
                     height: 23
-                    color: "#ffffff"
+                    color: "#ededed"
                     text: rpm
                     anchors.left: parent.left
                     anchors.top: parent.top
                     font.family: fontLoader.name
-                    font.pixelSize: 16
+                    font.pixelSize: 24
                     horizontalAlignment: Text.AlignLeft
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.leftMargin: -4
+                    anchors.leftMargin: 0
                     z: 5
                     anchors.topMargin: -1
                     fontSizeMode: Text.FixedSize
@@ -167,21 +166,21 @@ Item {
                 Text {
                     id: engine_temp_text
                     width: 22
-                    color: "#ffffff"
+                    height: 23
+                    color: "#ededed"
                     text: engineTemp
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
                     font.family: fontLoader.name
-                    font.pixelSize: 16
+                    font.pixelSize: 24
                     horizontalAlignment: Text.AlignRight
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.bottomMargin: -1
-                    anchors.leftMargin: -4
+                    anchors.bottomMargin: 0
+                    anchors.leftMargin: 0
                     z: 5
                     fontSizeMode: Text.FixedSize
                     rotation: 90
                     onTextChanged: PropertyAnimation {
-                        target: engine_temp_mask; property: "width"; to: engine_temp_outer.width - (((parseInt(engine_temp_text.text))/130)*engine_temp_outer.width);
+                       target: engine_temp_mask; property: "width"; to: engine_temp_outer.width - (((parseInt(engine_temp_text.text))/130)*engine_temp_outer.width);
                     }
                 }
 
@@ -272,7 +271,7 @@ Item {
                 id: kilometer
                 y: 114
                 height: 160
-                color: isCruiseControlActive ? "#00ff00" : "#ededed"
+                color: isCruiseControlActive ? "#00ff00" : (speed >= 120 ? "#D10000" :  "#ededed")
                 text: speed
                 font.family: fontLoaderBold.name
                 anchors.verticalCenter: parent.verticalCenter
@@ -366,7 +365,7 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;height:480;width:800}D{i:8;locked:true}D{i:14;locked:true}D{i:18;locked:true}
-D{i:25;locked:true}D{i:4}D{i:3}
+    D{i:0;formeditorZoom:1.1;height:480;width:800}D{i:8;locked:true}D{i:14;locked:true}
+D{i:25;locked:true}
 }
 ##^##*/

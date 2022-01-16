@@ -1,10 +1,16 @@
 import can
 from datetime import datetime, timedelta
+from easysettings import EasySettings
+
+settings = EasySettings("settings.conf")
+
+
 fuelCapacity = 58  # For Opel Zafira B
 
 canMessages = {
     0x108:  "MOTION",  # speed and rpm
     0x145:  "ENGINE",  # coolant, running state and cruise control
+    0x235:  "BACKLIGHT",
     0x445:  "AIR_TEMP",
     0x375:  "FUEL_LEVEL",
     0x175:  "SW_CONTROL",  # any steering wheel control including turn signals and glass wash
@@ -176,9 +182,9 @@ def humanizeDistanceData(data):
     frontLeftWheelDistanceHex = data[1] + data[2]
     frontRightWheelDistanceHex = data[3] + data[4]
     frontLeftWheelDistance = int(
-        frontLeftWheelDistanceHex, 16) * 1.5748  # as meters
+        frontLeftWheelDistanceHex, 16) * 1.5748 / 1000   # as meters
     frontRightWheelDistance = int(
-        frontRightWheelDistanceHex, 16) * 1.5748  # as meters
+        frontRightWheelDistanceHex, 16) * 1.5748 / 1000  #as meters
     # mean of distances in case of getting different values
     meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2
     return meanDistance
@@ -186,20 +192,34 @@ def humanizeDistanceData(data):
 
 def humanizeTimeData(data):
     data = convertByteArrayToList(data)
-    day = str(int(int(data[5], 16) / 8)).zfill(2)  # i guess
-    month = str(int(int(data[6], 16) / 8)).zfill(2)  # i guess
-    year = "20" + str(int(data[7], 16)).zfill(2)  # i guess
     hour = str(int(int(data[0], 16) / 8)).zfill(2)
     minute = str(int(int(data[1], 16) / 4)).zfill(2)
     second = str(int(int(data[2], 16) / 4)).zfill(2)
-    fullDateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second
-    format = '%Y-%m-%d %H:%M:%S'
+    fullDateTime = hour+':'+minute+':'+second
+    format = '%H:%M:%S'
     time = datetime.strptime(fullDateTime, format)
+    hourDifference = int(settings.get("hourDifference")) if settings.has_option("hourDifference") else 0
+    minuteDifference = int(settings.get("minuteDifference")) if settings.has_option("minuteDifference") else 0
     # fix wrong date time
-    fixedDate = time + timedelta(days=5251) - timedelta(hours=1, minutes=23)
-    finalDate = fixedDate.strftime("%d.%m.%Y")
+    fixedDate = time
+    if(hourDifference >= 0):
+        fixedDate = fixedDate + timedelta(hours=abs(hourDifference))
+    elif(hourDifference < 0):
+        fixedDate = fixedDate - timedelta(hours=abs(hourDifference))
+    if(minuteDifference >= 0):
+        fixedDate = fixedDate + timedelta(minutes=abs(minuteDifference))
+    elif(hourDifference < 0):
+        fixedDate = fixedDate - timedelta(minutes=abs(minuteDifference))
+
     finalTime = fixedDate.strftime("%H:%M")
-    return {"date": finalDate, "time": finalTime}
+    return {"time": finalTime}
+
+def humanizeBacklightData(data):
+    data = convertByteArrayToList(data)
+    if(data[1] == "00"):
+        return 0 #day mode
+    else:
+        return 1 #night mode
 
 
 def convertByteArrayToList(bytearr):  # is this really required??

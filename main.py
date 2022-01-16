@@ -4,17 +4,15 @@ from pathlib import Path
 import sys
 import time
 import datetime
-import math
-from PyQt5.QtCore import QVariant
 import can
 import cardata
 import threading
 import json
 from easysettings import EasySettings
+from rpi_backlight import Backlight
 
 from PyQt5.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine
-from PySide2 import QtCore
 from PySide2.QtCore import QObject, Signal, Slot
 
 
@@ -23,25 +21,27 @@ class MainWindow(QObject):
         QObject.__init__(self)
 
     settings = EasySettings("settings.conf")
+    backlight = None
+    try:
+        backlight = Backlight()
+    except:
+        print("backlight error")
 
     currentIgnitionStatus = ""
-    headLightLoop = None
     hazardLightOn = False
 
+    currentBacklightMode = 0
     currentFuelLevel = None
     insantConsumptionData = {"fuelLevel": None, "distanceTraveled": None}
-    currentInstantConsumption = None
     engineStartTime = 0
     distanceTraveled = 0
     distanceLoop = 0
     fuelLevelOnStart = None
-    # first element: count of samples, second element: current mean
-    averageSpeed = [0, 0]
+    averageSpeed = [0, 0] #first element: count of samples, second element: current mean
     isShutDownSet = False
     openDoors = []
 
     currentTime = None
-    currentDate = None
 
     isCanOnline = Signal(bool)
     currentIsCanOnline = False
@@ -62,7 +62,6 @@ class MainWindow(QObject):
     isCruiseControlActive = Signal(bool)
     currentIsCruiseControlActive = False
     triggeredControl = Signal(str)
-
     currentTriggeredControl = ""
     controlTriggeredTime = time.time()
 
@@ -116,11 +115,6 @@ class MainWindow(QObject):
             return self.currentTime
 
     @Slot(result=str)
-    def getCurrentDate(self):
-        if(self.currentDate is not None):
-            return self.currentDate
-
-    @Slot(result=str)
     def getOpenDoors(self):
         return json.dumps(self.openDoors)
 
@@ -139,26 +133,29 @@ class MainWindow(QObject):
         else:
             return json.dumps({})
 
-    @Slot(result=float)
-    def getCurrentInstantConsumption(self):
-        if(self.insantConsumptionData["fuelLevel"] is not None and self.insantConsumptionData["distanceTraveled"] != 0):
-            fuelConsumption = self.currentFuelLevel - \
-                self.insantConsumptionData["fuelLevel"]
-            distanceTraveled = ((self.distanceLoop * 1032) + self.distanceTraveled) / \
-                1000 - self.insantConsumptionData["distanceTraveled"]
-            instantConsumption = fuelConsumption * 100 / distanceTraveled
-            self.currentInstantConsumption = instantConsumption
-        else:
-            if(self.currentFuelLevel is not None):
-                self.insantConsumptionData["fuelLevel"] = self.currentFuelLevel
-            if(self.distanceTraveled is not None):
-                self.insantConsumptionData["distanceTraveled"] = (
-                    (self.distanceLoop * 1032) + self.distanceTraveled)/1000
-        return self.currentInstantConsumption if self.currentInstantConsumption is not None else 0
-
     @Slot(result=bool)
     def getIsIgnitionOn(self):
         return self.isIgnitionOn
+
+    @Slot(result=int)
+    def refreshBacklight(self):
+        if(self.currentBacklightMode == 0):
+            if self.backlight is not None:
+                self.backlight.brightness = self.settings.has(
+                    "dayBrightness") if self.settings.get("dayBrightness") else 100
+        elif(self.currentBacklightMode == 1):
+            if self.backlight is not None:
+                self.backlight.brightness = self.settings.has(
+                    "nightBrightness") if self.settings.get("nightBrightness") else 100
+
+    @Slot(result=bool)
+    def saveSettings(self):
+        try:
+            os.system("sudo raspi-config --disable-overlayfs")
+            os.system("sudo raspi-config --enable-overlayfs")
+        except:
+            return False
+        return True
 
     @Slot(str, str)
     def setSetting(self, setting, value):
@@ -171,20 +168,6 @@ class MainWindow(QObject):
             return self.settings.get(setting)
         else:
             return None
-
-    @Slot(int)
-    def setHeadLights(self, status):
-        if status == 1:
-            try:
-                if self.bus is not None:
-                    #self.headLightLoop = self.bus.send_periodic(cardata.HEAD_LIGHTS_ON, 0.00001)
-                    print("Head lights on loop started.")
-            except can.CanError:
-                print("Head lights on message NOT sent.")
-        else:
-            if self.headLightLoop is not None:
-                print("head lights stopped")
-                self.headLightLoop.stop()
 
     def emitDefaults(self):
         self.isEngineRunning.emit(False)
@@ -250,6 +233,22 @@ class MainWindow(QObject):
             self.updateDistanceTraveled(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'DOOR_OPEN'):
             self.updateOpenDoors(data)
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'BACKLIGHT'):
+            self.updateBacklight(data)
+
+    def updateBacklight(self, data):
+        backlightMode = cardata.humanizeBacklightData(data)
+        if(backlightMode == 0):
+            if self.backlight is not None:
+                self.backlight.brightness = self.settings.has(
+                    "dayBrightness") if self.settings.get("dayBrightness") else 100
+            return ""
+        elif(backlightMode == 1):
+            if self.backlight is not None:
+                self.backlight.brightness = self.settings.has(
+                    "nightBrightness") if self.settings.get("nightBrightness") else 100
+            return ""
+        self.currentBacklightMode = backlightMode
 
     def updateOpenDoors(self, data):
         openDoors = cardata.humanizeDoorOpenData(data)
@@ -260,16 +259,16 @@ class MainWindow(QObject):
             if data == cardata.KEY_BUTTONS_LOCK.data:
                 try:
                     if(self.bus is not None):
-                            os.system("cansend can0 160#02C0058F")
-                            #self.bus.send(cardata.KEY_BUTTONS_LOCK_HOLD)
-                            print("Key button lock hold message sent.")
+                        #os.system("cansend can0 160#02C0058F")
+                        time.sleep(5)
+                        self.bus.send(cardata.KEY_BUTTONS_LOCK_HOLD)
+                        print("Key button lock hold message sent.")
                 except can.CanError:
                     print("Key button lock hold message NOT sent.")
 
     def updateTime(self, data):
         timeData = cardata.humanizeTimeData(data)
         self.currentTime = timeData["time"]
-        self.currentDate = timeData["date"]
 
     def updateGearStatus(self, data):
         gearStatus = cardata.humanizeGearData(data)
@@ -368,54 +367,8 @@ class MainWindow(QObject):
             # engine stopped
             print()
 
-    @Slot()
-    def needleSweep(self):
-        print("on")
-        counter = 0
-        direction = 0  # 0: forward 1: backward
-        speedRmpRate = 3.25  # calculated for 8000 rpm and 260 km/s speed
-        start_time = time.time()
-        interval = 0.0020  # timer interval as seconds
-        tour = 0  # timer tour
-        while True:
-            current_time = time.time()
-            elapsed_time = current_time - start_time
-            if math.floor(elapsed_time / interval) > tour:
-                # time ticked
-                if direction == 0:
-                    if counter < 260:
-                        speed1 = int(math.floor(counter/256))
-                        speed2 = int(counter % 256)
-                        # multiply rpm by 100 to calculate exact 4 digit rpm
-                        rpm1 = int(math.floor(counter*100/speedRmpRate/256))
-                        rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
-                        counter += 1
-                    else:
-                        direction = 1
-                elif direction == 1:
-                    if counter >= 0:
-                        speed1 = int(math.floor(counter/256))
-                        speed2 = int(counter % 256)
-                        rpm1 = int(math.floor(counter*100/speedRmpRate/256))
-                        rpm2 = int(math.ceil(counter*100/speedRmpRate)) % 256
-                        counter -= 1
-                    else:
-                        break
-
-                msg = can.Message(arbitration_id=0x108,
-                                  data=[0, rpm1, rpm2, 0, speed1, speed2, 0, 0], is_extended_id=False)
-
-                if self.bus is not None and counter % 10 == 0:  # reduce loops to empathize with buffer
-                    try:
-                        if(self.bus is not None):
-                            self.bus.send(msg)
-                    except can.CanError:
-                        if counter == 0:
-                            print("Needle sweep message NOT sent.")
-                tour += 1
-
     def shutDown(self):
-        os.system("shutdown -h +29")
+        os.system("shutdown -h +4")
         print("shutdown is set")
         self.isShutDownSet = True
 

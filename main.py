@@ -141,12 +141,12 @@ class MainWindow(QObject):
     def refreshBacklight(self):
         if(self.currentBacklightMode == 0):
             if self.backlight is not None:
-                self.backlight.brightness = self.settings.get(
-                    "dayBrightness") if self.settings.has_option("dayBrightness") else 100
+                self.backlight.brightness = int(self.settings.get(
+                    "dayBrightness")) if self.settings.has_option("dayBrightness") else 100
         elif(self.currentBacklightMode == 1):
             if self.backlight is not None:
-                self.backlight.brightness = self.settings.get(
-                    "nightBrightness") if self.settings.has_option("nightBrightness") else 100
+                self.backlight.brightness = int(self.settings.get(
+                    "nightBrightness")) if self.settings.has_option("nightBrightness") else 100
 
     @Slot(result=bool)
     def saveSettings(self):

@@ -208,7 +208,7 @@ def humanizeTimeData(data):
         fixedDate = fixedDate - timedelta(hours=abs(hourDifference))
     if(minuteDifference >= 0):
         fixedDate = fixedDate + timedelta(minutes=abs(minuteDifference))
-    elif(hourDifference < 0):
+    elif(minuteDifference < 0):
         fixedDate = fixedDate - timedelta(minutes=abs(minuteDifference))
 
     finalTime = fixedDate.strftime("%H:%M")

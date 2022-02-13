@@ -151,8 +151,9 @@ class MainWindow(QObject):
     @Slot(result=bool)
     def saveSettings(self):
         try:
-            os.system("sudo raspi-config --disable-overlayfs")
-            os.system("sudo raspi-config --enable-overlayfs")
+            #os.system("sudo raspi-config --disable-overlayfs")
+            #os.system("sudo raspi-config --enable-overlayfs")
+            print("save will be added")
         except:
             return False
         return True

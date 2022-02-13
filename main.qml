@@ -489,7 +489,7 @@ Window {
             Text {
                 id: fuelPercentage
                 color: "#ededed"
-                text: currentFuelPercentage > 0 ? "%" + currentFuelPercentage : "--"
+                text: currentFuelPercentage > 0 ? "%" + currentFuelPercentage.toFixed(2) : "--"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 font.pixelSize: 18
@@ -552,7 +552,7 @@ Window {
 
         Rectangle {
             id: trip_info
-            width: 330
+            width: 450
             height: 50
             color: "#00000000"
             anchors.right: parent.right
@@ -571,7 +571,7 @@ Window {
 
                 Text {
                     id: timerText
-                    width: 60
+                    width: 100
                     color: "#ededed"
                     text: currentElapsedTime.length > 0 ? currentElapsedTime : qsTr("--")
                     anchors.left: parent.left
@@ -595,14 +595,14 @@ Window {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 source: "qml/images/road.png"
-                anchors.leftMargin: 110
+                anchors.leftMargin: 150
                 fillMode: Image.PreserveAspectFit
 
                 Text {
                     id: distanceText
-                    width: 60
+                    width: 100
                     color: "#ededed"
-                    text: currentDistanceTraveled > 0 ? currentDistanceTraveled + " km" : qsTr("--")
+                    text: currentDistanceTraveled > 0 ? currentDistanceTraveled.toFixed(2) + " km" : qsTr("--")
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
@@ -623,14 +623,14 @@ Window {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 source: "qml/images/speed.png"
-                anchors.leftMargin: 220
+                anchors.leftMargin: 300
                 fillMode: Image.PreserveAspectFit
 
                 Text {
                     id: speedText
-                    width: 60
+                    width: 100
                     color: "#ededed"
-                    text: currentAverageSpeed > 0 ? currentAverageSpeed + " km/s": qsTr("--")
+                    text: currentAverageSpeed > 0 ? currentAverageSpeed.toFixed(0) + " km/s": qsTr("--")
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
@@ -732,6 +732,6 @@ Window {
 
 /*##^##
 Designer {
-    D{i:0}D{i:13}D{i:21;locked:true}D{i:26;locked:true}D{i:34;locked:true}D{i:36}D{i:35}
+    D{i:0;formeditorZoom:0.9}D{i:21;locked:true}D{i:26;locked:true}D{i:34;locked:true}
 }
 ##^##*/

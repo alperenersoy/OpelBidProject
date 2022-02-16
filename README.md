@@ -1,5 +1,5 @@
 # OpelBidProject
-Simple raspberry pi based retrofit project for Opel Bid Display.
+Simple Raspberry Pi based retrofit project for Opel Bid Display.
 
 More info about project and hardware will be added.
 

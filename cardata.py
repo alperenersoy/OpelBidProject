@@ -186,7 +186,7 @@ def humanizeDistanceData(data):
     frontRightWheelDistance = int(
         frontRightWheelDistanceHex, 16) * 1.5748 / 1000  #as meters
     # mean of distances in case of getting different values
-    meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 2
+    meanDistance = (frontLeftWheelDistance + frontRightWheelDistance) / 4
     return meanDistance
 
 

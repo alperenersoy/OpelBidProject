@@ -227,9 +227,9 @@ class MainWindow(QObject):
             self.triggerSWControl(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'IGNITION_STATUS'):
             self.updateIgnitionStatus(data)
-        elif(id in cardata.canMessages and cardata.canMessages[id] == 'GEAR_STATUS'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'GEAR_STATUS' and False):
             self.updateGearStatus(data)
-        elif(id in cardata.canMessages and cardata.canMessages[id] == 'KEY_BUTTONS'):
+        elif(id in cardata.canMessages and cardata.canMessages[id] == 'KEY_BUTTONS' and False):
             self.triggerKeyButtons(data)
         elif(id in cardata.canMessages and cardata.canMessages[id] == 'DISTANCE_TRAVELED'):
             self.updateDistanceTraveled(data)

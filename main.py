@@ -37,7 +37,8 @@ class MainWindow(QObject):
     distanceTraveled = 0
     distanceLoop = 0
     fuelLevelOnStart = None
-    averageSpeed = [0, 0] #first element: count of samples, second element: current mean
+    # first element: count of samples, second element: current mean
+    averageSpeed = [0, 0]
     isShutDownSet = False
     openDoors = []
 
@@ -124,7 +125,7 @@ class MainWindow(QObject):
             self.fuelLevelOnStart = self.currentFuelLevel
         if(self.currentIsEngineRunning):
             currentTripData = {
-                "elapsedTime": str(datetime.timedelta(seconds=time.time() - self.engineStartTime)),
+                "elapsedTime": str(datetime.timedelta(seconds=round(time.time() - self.engineStartTime))),
                 "fuelConsumption": round(self.fuelLevelOnStart - self.currentFuelLevel, 2),
                 "distanceTraveled": round(((self.distanceLoop * 1032) + self.distanceTraveled)/1000, 2),
                 "averageSpeed": self.averageSpeed[1]
@@ -241,11 +242,13 @@ class MainWindow(QObject):
         backlightMode = cardata.humanizeBacklightData(data)
         if(backlightMode == 0):
             if self.backlight is not None:
-                self.backlight.brightness = int(self.settings.get("dayBrightness")) if self.settings.has_option("dayBrightness") else 100
+                self.backlight.brightness = int(self.settings.get(
+                    "dayBrightness")) if self.settings.has_option("dayBrightness") else 100
             return ""
         elif(backlightMode == 1):
             if self.backlight is not None:
-                self.backlight.brightness = int(self.settings.get("nightBrightness")) if self.settings.has_option("nightBrightness")  else 100
+                self.backlight.brightness = int(self.settings.get(
+                    "nightBrightness")) if self.settings.has_option("nightBrightness") else 100
             return ""
         self.currentBacklightMode = backlightMode
 
@@ -258,7 +261,7 @@ class MainWindow(QObject):
             if data == cardata.KEY_BUTTONS_LOCK.data:
                 try:
                     if(self.bus is not None):
-                        #os.system("cansend can0 160#02C0058F")
+                        # os.system("cansend can0 160#02C0058F")
                         time.sleep(5)
                         self.bus.send(cardata.KEY_BUTTONS_LOCK_HOLD)
                         print("Key button lock hold message sent.")

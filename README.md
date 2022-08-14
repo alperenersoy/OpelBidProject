@@ -1,13 +1,5 @@
 # OpelBidProject
 
-**This project is a work in progress. Interacting with a vehicle's CAN bus can be risky. Do note that you try this at on your own risk.**
-
-##Hardware
-- Raspberry Pi 3B+
-- Waveshare 4.3 inch Capacitive Touch Display (DSI)
-- MCP2515 CAN bus module
-- DC-DC 24V/12V 5V 5A buck convertor [one of these](https://www.aliexpress.com/item/33004338879.html?_randl_currency=TRY&_randl_shipto=TR&src=google&aff_fcid=a122133b4cb747229f2fd0538ca8186c-1648652823744-00204-UneMJZVf&aff_fsk=UneMJZVf&aff_platform=aaf&sk=UneMJZVf&aff_trace_key=a122133b4cb747229f2fd0538ca8186c-1648652823744-00204-UneMJZVf&terminal_id=0f17a9b78f284e9188746b9364744794&afSmartRedirect=y)
-=======
 **This project is a work in progress. Interacting with a vehicle's CAN bus can be risky. Do note that you try this at your own risk.**
 
 Simple Raspberry Pi based retrofit project for Opel Bid Display. It gets data from LS-CAN (also known as GMLAN) over the OBD II connector. It shows the clock, air temperature, speed, rpm, engine temperature, fuel percentage, elapsed time, driven distance, average speed and open doors. Also, it flashes hazard lights when the gear is in reverse and it should close windows when the car is locked but these functions are not working properly for now. I sniffed some CAN ids myself but most of them are from [this repo.](https://github.com/JJToB/Car-CAN-Message-DB/tree/master/Opel/Astra/H/LS-CAN) Some data such as fuelCapacity is hard coded for Opel Zafira check them if your car is different model.
@@ -48,5 +40,5 @@ Mounted Raspberry Pi directly to the display and added a metal back-cover which 
 ![ss2](https://user-images.githubusercontent.com/83382417/160891349-e5701113-ca83-4198-a7a4-7a9e7d4dcd2d.jpg)
 ![ss3](https://user-images.githubusercontent.com/83382417/160891351-e7ca0315-94ac-419e-9544-3d8233e11433.jpg)
 ![ss4](https://user-images.githubusercontent.com/83382417/160891353-e00a2b3a-045f-4cba-a2c2-d07e486684a6.jpg)
-![ss5](https://user-images.githubusercontent.com/83382417/160891764-0939a3ad-e1ae-4d88-8b2f-e84bac51ebe2.j
+![ss5](https://user-images.githubusercontent.com/83382417/160891764-0939a3ad-e1ae-4d88-8b2f-e84bac51ebe2.jpg)
 

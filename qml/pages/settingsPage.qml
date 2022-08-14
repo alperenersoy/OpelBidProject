@@ -18,6 +18,7 @@ Item {
         Rectangle {
             id: timeSetting
             height: 50
+            visible: false
             color: "#ededed"
             radius: 10
             border.width: 0
@@ -155,6 +156,7 @@ Item {
         Rectangle {
             id: reverseSetting
             height: 50
+            visible: false
             color: "#ededed"
             radius: 10
             border.width: 0
@@ -229,6 +231,7 @@ Item {
             x: 20
             y: 150
             height: 50
+            visible: false
             color: "#ededed"
             radius: 10
             border.width: 0
@@ -267,7 +270,7 @@ Item {
             anchors.top: parent.top
             anchors.leftMargin: 20
             anchors.rightMargin: 20
-            anchors.topMargin: 150
+            anchors.topMargin: 70
 
             Text {
                 id: brightnessLabel

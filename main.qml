@@ -75,6 +75,7 @@ Window {
                         anchors.right: parent.right
                         font.pixelSize: 36
                         anchors.rightMargin: 20
+                        visible: false
                     }
 
                     Rectangle {
@@ -188,6 +189,7 @@ Window {
                         anchors.right: parent.right
                         font.pixelSize: 36
                         anchors.rightMargin: 20
+                        visible: false
                     }
 
                     Text {

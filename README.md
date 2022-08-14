@@ -48,5 +48,5 @@ Mounted Raspberry Pi directly to the display and added a metal back-cover which 
 ![ss2](https://user-images.githubusercontent.com/83382417/160891349-e5701113-ca83-4198-a7a4-7a9e7d4dcd2d.jpg)
 ![ss3](https://user-images.githubusercontent.com/83382417/160891351-e7ca0315-94ac-419e-9544-3d8233e11433.jpg)
 ![ss4](https://user-images.githubusercontent.com/83382417/160891353-e00a2b3a-045f-4cba-a2c2-d07e486684a6.jpg)
-![ss5](https://user-images.githubusercontent.com/83382417/160891764-0939a3ad-e1ae-4d88-8b2f-e84bac51ebe2.jpg)
+![ss5](https://user-images.githubusercontent.com/83382417/160891764-0939a3ad-e1ae-4d88-8b2f-e84bac51ebe2.j
 

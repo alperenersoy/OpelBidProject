@@ -85,7 +85,7 @@ Item {
             border.color: "#7f353637"
             border.width: 1
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -22
+            anchors.verticalCenterOffset: -25
             transformOrigin: Item.Center
             rotation: 270
 
@@ -95,10 +95,10 @@ Item {
                 text: rpm
                 font.family: fontLoader.name
                 anchors.fill: parent
-                font.pixelSize: 24
+                font.pixelSize: 30
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                anchors.leftMargin: -125
+                anchors.leftMargin: -130
                 anchors.bottomMargin: 0
                 fontSizeMode: Text.FixedSize
                 rotation: 90
@@ -191,7 +191,7 @@ Item {
             border.color: "#7f353637"
             border.width: 1
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -22
+            anchors.verticalCenterOffset: -25
             transformOrigin: Item.Center
             rotation: 270
 
@@ -201,10 +201,10 @@ Item {
                 text: engineTemp
                 font.family: fontLoader.name
                 anchors.fill: parent
-                font.pixelSize: 24
+                font.pixelSize: 30
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                anchors.leftMargin: -125
+                anchors.leftMargin: -130
                 fontSizeMode: Text.FixedSize
                 rotation: 90
                 onTextChanged: PropertyAnimation {
@@ -258,6 +258,16 @@ Item {
                     GradientStop {
                         position: 0
                         color: "#59ccff"
+                        SequentialAnimation on color {
+                            running: engineTemp < 40
+                            loops: Animation.Infinite
+                            ColorAnimation {
+                                from: "#59ccff"; to: "#000000"; duration: 1000
+                            }
+                            ColorAnimation {
+                                from: "#000000"; to: "#59ccff"; duration: 1000
+                            }
+                        }
                     }
 
                     GradientStop {
@@ -346,6 +356,6 @@ Item {
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:1.5;height:480;width:800}
+    D{i:0;formeditorZoom:0.9;height:480;width:800}
 }
 ##^##*/

@@ -7,9 +7,9 @@ Item {
     height: 430
 
 
-    property double speed: 120
-    property double rpm: 50
-    property double engineTemp: 30
+    property double speed: 0
+    property double rpm: 0
+    property double engineTemp: 0
     property bool isCanOnline: false
     property bool isCruiseControlActive: false
     property bool isIgnitionOn: false
